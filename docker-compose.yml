@@ -2,20 +2,21 @@ version: '3.8'
 services:
   review-service:
     build: .
-    image: ya-workshop-review-service
     container_name: review-service
     ports:
       - "8090:8090"
     depends_on:
-      - review-service-database
+      - review-service-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/review-service
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://review-service-db:5432/review-service
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
 
-  user-service-database:
+  review-service-db:
     image: postgres:14-alpine
-    container_name: user-service-database
+    container_name: review-service-db
+    ports:
+      - "5432:5432"
     environment:
       - POSTGRES_DB=review-service
       - POSTGRES_USER=root
