@@ -9,11 +9,15 @@
 
 ### Models
 Модель `Review` включает следующие поля: 
-- authorId
-- username
+- id
+- author
 - title
 - content
-- createdDateTime
-- updatedDateTime
+- createdOn
+- updatedOn
 - mark
 - eventId
+
+Модель `User` включает следующие поля: 
+- id
+- username
