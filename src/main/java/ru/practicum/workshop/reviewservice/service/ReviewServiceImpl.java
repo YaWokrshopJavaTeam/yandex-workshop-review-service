@@ -21,13 +21,19 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserStorage userStorage;
 
     private void saveUser(User user) {
-        userStorage.save(user);
+        User newUser = userStorage.save(user);
+
+        log.info("User added: {}", newUser);
     }
 
     @Override
     public Review createReview(Review review) {
         saveUser(review.getAuthor());
-        return reviewStorage.save(review);
+
+        Review newReview = reviewStorage.save(review);
+        log.info("Review added: {}", newReview);
+
+        return newReview;
     }
 
     private void updateFields(Review toUpdateReview, Review fromUpdateReview) {
@@ -53,22 +59,32 @@ public class ReviewServiceImpl implements ReviewService {
                             review.getId(), review.getAuthor().getId()));
         });
         updateFields(toUpdateReview, review);
-        return reviewStorage.save(toUpdateReview);
+        Review updatedReview = reviewStorage.save(toUpdateReview);
+
+        log.info("Review updated: {}", updatedReview);
+
+        return updatedReview;
     }
 
     @Transactional(readOnly = true)
     @Override
     public Review getReviewById(Long id) {
-        return reviewStorage.findById(id).orElseThrow(() ->{
+        Review review = reviewStorage.findById(id).orElseThrow(() ->{
             log.error("NOT FOUND. Получение отзыва по id. Отзыв с id {} не найден.", id);
             return new NotFoundException(String.format("Review with id = %d was not found", id));
         });
+
+        log.info("Review got: id={}", review.getId());
+
+        return review;
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<Review> getReviewsByEvent(Long eventId, Pageable pageable) {
-        return reviewStorage.findByEventId(eventId, pageable);
+        List<Review> reviews = reviewStorage.findByEventId(eventId, pageable);
+        log.info("Review got by eventId={}: count={}", eventId, reviews.size());
+        return reviews;
     }
 
     @Override
@@ -80,6 +96,7 @@ public class ReviewServiceImpl implements ReviewService {
             throw new ForbiddenException(String.format("You don't have access to review with id = %d", reviewId));
         } else {
             reviewStorage.deleteById(reviewId);
+            log.info("Review deleted: id={}", reviewId);
             return reviewId;
         }
     }
