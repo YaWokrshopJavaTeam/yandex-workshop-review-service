@@ -1,5 +1,6 @@
 package ru.practicum.workshop.reviewservice.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -151,7 +152,7 @@ public class ReviewServiceImplTest {
                 .updatedOn(LocalDateTime.now())
                 .build();
 
-        final Exception exception = assertThrows(NotFoundException.class, () -> {
+        final Exception exception = assertThrows(EntityNotFoundException.class, () -> {
             reviewService.updateReview(updatedReview);
         });
         final String expectedMessage = String.format("Review with id = %d for user with id = %d was not found",
@@ -175,7 +176,7 @@ public class ReviewServiceImplTest {
     @Test
     void shouldThrowNotFoundWhenGet() {
         final long id = Long.MAX_VALUE;
-        final Exception exception = assertThrows(NotFoundException.class, () -> {
+        final Exception exception = assertThrows(EntityNotFoundException.class, () -> {
             reviewService.getReviewById(id);
         });
         final String expectedMessage = String.format("Review with id = %d was not found", id);
@@ -224,7 +225,7 @@ public class ReviewServiceImplTest {
     @Test
     void shouldThrowNotFoundWhenDelete() {
         final long id = Long.MAX_VALUE;
-        final Exception exception = assertThrows(NotFoundException.class, () -> {
+        final Exception exception = assertThrows(EntityNotFoundException.class, () -> {
             reviewService.deleteReview(id, review.getAuthor().getId());
         });
         final String expectedMessage = String.format("Review with id = %d was not found", id);
