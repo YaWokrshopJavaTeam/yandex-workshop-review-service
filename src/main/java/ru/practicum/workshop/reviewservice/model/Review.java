@@ -2,6 +2,7 @@ package ru.practicum.workshop.reviewservice.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.Hibernate;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -33,14 +34,14 @@ public class Review {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Review review = (Review) o;
-        return Objects.equals(id, review.id) && Objects.equals(eventId, review.eventId) && Objects.equals(title, review.title) && Objects.equals(content, review.content) && Objects.equals(createdOn, review.createdOn) && Objects.equals(updatedOn, review.updatedOn) && Objects.equals(mark, review.mark);
+        return Objects.equals(id, review.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, eventId, title, content, createdOn, updatedOn, mark);
+        return Objects.hashCode(id);
     }
 
     @Override

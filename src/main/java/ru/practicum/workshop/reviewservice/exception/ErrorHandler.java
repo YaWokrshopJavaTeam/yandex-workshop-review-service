@@ -1,5 +1,6 @@
-package ru.practicum.workshop.reviewservice.controller;
+package ru.practicum.workshop.reviewservice.exception;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -11,8 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import ru.practicum.workshop.reviewservice.exception.ForbiddenException;
-import ru.practicum.workshop.reviewservice.exception.NotFoundException;
+import ru.practicum.workshop.reviewservice.controller.ReviewController;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -56,9 +56,9 @@ public class ErrorHandler {
         return createMap("BAD_REQUEST", "Incorrectly made request", e.getMessage());
     }
 
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleNotFound(final NotFoundException e) {
+    public Map<String, String> handleNotFound(final EntityNotFoundException e) {
         log(e);
         return createMap("NOT_FOUND", "The required object was not found", e.getMessage());
     }

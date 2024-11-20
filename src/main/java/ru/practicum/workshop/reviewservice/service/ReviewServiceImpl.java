@@ -1,12 +1,12 @@
 package ru.practicum.workshop.reviewservice.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.workshop.reviewservice.exception.ForbiddenException;
-import ru.practicum.workshop.reviewservice.exception.NotFoundException;
 import ru.practicum.workshop.reviewservice.storage.*;
 import ru.practicum.workshop.reviewservice.model.*;
 
@@ -54,7 +54,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .orElseThrow(() ->{
                     log.error("NOT FOUND. Обновление отзыва. Отзыв с id {} пользователя с id {} не найден.",
                             review.getId(), review.getAuthor().getId());
-                    return new NotFoundException(String.format(
+                    return new EntityNotFoundException(String.format(
                             "Review with id = %d for user with id = %d was not found",
                             review.getId(), review.getAuthor().getId()));
         });
@@ -71,7 +71,7 @@ public class ReviewServiceImpl implements ReviewService {
     public Review getReviewById(Long id) {
         Review review = reviewStorage.findById(id).orElseThrow(() ->{
             log.error("NOT FOUND. Получение отзыва по id. Отзыв с id {} не найден.", id);
-            return new NotFoundException(String.format("Review with id = %d was not found", id));
+            return new EntityNotFoundException(String.format("Review with id = %d was not found", id));
         });
 
         log.info("Review got: id={}", review.getId());
