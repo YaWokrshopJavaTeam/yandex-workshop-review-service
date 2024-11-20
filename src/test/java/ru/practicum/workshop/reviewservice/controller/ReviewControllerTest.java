@@ -29,6 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static ru.practicum.workshop.reviewservice.dto.ReviewDtoValidationConstants.*;
 
 @WebMvcTest(controllers = ReviewController.class)
 @RequiredArgsConstructor(onConstructor_= @Autowired)
@@ -43,6 +44,7 @@ class ReviewControllerTest {
 
     private ReviewCreateDto createDto;
     private ReviewDtoWithAuthor dtoWithAuthorId;
+    private ReviewUpdateDto updateDto;
     private ReviewDto dto;
     private Review review;
     private MockHttpServletResponse response;
@@ -117,6 +119,176 @@ class ReviewControllerTest {
         verifyNoMoreInteractions(reviewMapper);
     }
 
+    @DisplayName("Валидация ReviewCreateDto null authorId")
+    @Test
+    void shouldThrowBadRequestWhenCreateReviewNullAuthorId() throws Exception {
+        createDto = new ReviewCreateDto(null, ++id, "user", "title", "content");
+
+        response = createReviewResponse(createDto);
+
+        String responseContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseContent.contains(AUTHOR_ID_NOT_NULL_ERROR_MESSAGE));
+
+        verifyNoInteractions(reviewService);
+        verifyNoInteractions(reviewMapper);
+    }
+
+    @DisplayName("Валидация ReviewCreateDto authorId @Positive")
+    @Test
+    void shouldThrowBadRequestWhenCreateReviewIncorrectAuthorId() throws Exception {
+        createDto = new ReviewCreateDto(0L, ++id, "user", "title", "content");
+
+        response = createReviewResponse(createDto);
+
+        String responseContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseContent.contains(AUTHOR_ID_POSITIVE_ERROR_MESSAGE));
+
+        verifyNoInteractions(reviewService);
+        verifyNoInteractions(reviewMapper);
+    }
+
+    @DisplayName("Валидация ReviewCreateDto null eventId")
+    @Test
+    void shouldThrowBadRequestWhenCreateReviewNullEventId() throws Exception {
+        createDto = new ReviewCreateDto(++id, null, "user", "title", "content");
+
+        response = createReviewResponse(createDto);
+
+        String responseContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseContent.contains(EVENT_ID_NOT_NULL_ERROR_MESSAGE));
+
+        verifyNoInteractions(reviewService);
+        verifyNoInteractions(reviewMapper);
+    }
+
+    @DisplayName("Валидация ReviewCreateDto eventId @Positive")
+    @Test
+    void shouldThrowBadRequestWhenCreateReviewIncorrectEventId() throws Exception {
+        createDto = new ReviewCreateDto(++id, 0L, "user", "title", "content");
+
+        response = createReviewResponse(createDto);
+
+        String responseContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseContent.contains(EVENT_ID_POSITIVE_ERROR_MESSAGE));
+
+        verifyNoInteractions(reviewService);
+        verifyNoInteractions(reviewMapper);
+    }
+
+    @DisplayName("Валидация ReviewCreateDto username @NotBlank")
+    @Test
+    void shouldThrowBadRequestWhenCreateReviewBlankUsername() throws Exception {
+        createDto = new ReviewCreateDto(++id, id, " ".repeat(USERNAME_MIN_SIZE + 1), "title", "content");
+
+        response = createReviewResponse(createDto);
+
+        String responseBlankContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseBlankContent.contains(USERNAME_NOT_BLANK_ERROR_MESSAGE));
+
+        ReviewCreateDto nullUsernameDto = new ReviewCreateDto(++id, id, null, "title", "content");
+        MockHttpServletResponse nullResponse = createReviewResponse(nullUsernameDto);
+        String responseNullContent = nullResponse.getContentAsString();
+
+        assertEquals(400, nullResponse.getStatus());
+        assertTrue(responseNullContent.contains(USERNAME_NOT_BLANK_ERROR_MESSAGE));
+
+        verifyNoInteractions(reviewService);
+        verifyNoInteractions(reviewMapper);
+    }
+
+    @DisplayName("Валидация ReviewCreateDto username @Size")
+    @Test
+    void shouldThrowBadRequestWhenCreateReviewIncorrectUsername() throws Exception {
+        createDto = new ReviewCreateDto(++id, id, "i".repeat(USERNAME_MIN_SIZE - 1), "title", "content");
+
+        response = createReviewResponse(createDto);
+
+        String responseBlankContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseBlankContent.contains(USERNAME_SIZE_ERROR_MESSAGE));
+
+        ReviewCreateDto maxUsernameDto = new ReviewCreateDto(++id, id, "i".repeat(USERNAME_MAX_SIZE + 1), "title", "content");
+        MockHttpServletResponse maxResponse = createReviewResponse(maxUsernameDto);
+        String responseMaxContent = maxResponse.getContentAsString();
+
+        assertEquals(400, maxResponse.getStatus());
+        assertTrue(responseMaxContent.contains(USERNAME_SIZE_ERROR_MESSAGE));
+
+        verifyNoInteractions(reviewService);
+        verifyNoInteractions(reviewMapper);
+    }
+
+    @DisplayName("Валидация ReviewCreateDto title @Size")
+    @Test
+    void shouldThrowBadRequestWhenCreateReviewIncorrectTitle() throws Exception {
+        createDto = new ReviewCreateDto(++id,
+                id,
+                "user",
+                "i".repeat(TITLE_MAX_SIZE + 1),
+                "content");
+
+        response = createReviewResponse(createDto);
+
+        String responseBlankContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseBlankContent.contains(TITLE_SIZE_ERROR_MESSAGE));
+
+        verifyNoInteractions(reviewService);
+        verifyNoInteractions(reviewMapper);
+    }
+
+    @DisplayName("Валидация ReviewCreateDto content @NotBlank")
+    @Test
+    void shouldThrowBadRequestWhenCreateReviewBlankContent() throws Exception {
+        createDto = new ReviewCreateDto(++id, id, "user", "title",
+                " ".repeat(CONTENT_MIN_SIZE + 1));
+
+        response = createReviewResponse(createDto);
+
+        String responseBlankContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseBlankContent.contains(CONTENT_NOT_BLANK_ERROR_MESSAGE));
+
+        ReviewCreateDto nullContentDto = new ReviewCreateDto(++id,
+                id, "user", "title", null);
+        MockHttpServletResponse nullResponse = createReviewResponse(nullContentDto);
+        String responseNullContent = nullResponse.getContentAsString();
+
+        assertEquals(400, nullResponse.getStatus());
+        assertTrue(responseNullContent.contains(CONTENT_NOT_BLANK_ERROR_MESSAGE));
+
+        verifyNoInteractions(reviewService);
+        verifyNoInteractions(reviewMapper);
+    }
+
+    @DisplayName("Валидация ReviewCreateDto content @Size")
+    @Test
+    void shouldThrowBadRequestWhenCreateReviewIncorrectContent() throws Exception {
+        createDto = new ReviewCreateDto(++id, id, "user", "title", "c".repeat(CONTENT_MIN_SIZE - 1));
+
+        response = createReviewResponse(createDto);
+
+        String responseMinContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseMinContent.contains(CONTENT_SIZE_ERROR_MESSAGE));
+
+        ReviewCreateDto maxUsernameDto = new ReviewCreateDto(++id, id, "user", "title",
+                "c".repeat(CONTENT_MAX_SIZE + 1));
+        MockHttpServletResponse MaxResponse = createReviewResponse(maxUsernameDto);
+        String responseMaxContent = MaxResponse.getContentAsString();
+
+        assertEquals(400, MaxResponse.getStatus());
+        assertTrue(responseMaxContent.contains(CONTENT_SIZE_ERROR_MESSAGE));
+
+        verifyNoInteractions(reviewService);
+        verifyNoInteractions(reviewMapper);
+    }
+
     private ReviewUpdateDto createUpdateDto() {
         return new ReviewUpdateDto("other name", "other title", "other content");
     }
@@ -145,7 +317,7 @@ class ReviewControllerTest {
     @DisplayName("Обновить отзыв")
     @Test
     void updateReview() throws Exception {
-        ReviewUpdateDto updateDto = createUpdateDto();
+        updateDto = createUpdateDto();
         final Long reviewId = ++id;
         final Long authorId = id++;
         review = createReviewFromUpdate(updateDto, reviewId, authorId);
@@ -172,6 +344,131 @@ class ReviewControllerTest {
         verify(reviewMapper, times(1))
                 .toDtoWithAuthor(any(Review.class));
         verifyNoMoreInteractions(reviewMapper);
+    }
+
+    @DisplayName("Валидация обновления отзыва - reviewId @Positive")
+    @Test
+    void shouldThrowBadRequestWhenUpdateReviewIncorrectReviewId() throws Exception {
+        updateDto = createUpdateDto();
+        final Long reviewId = 0L;
+        final Long authorId = ++id;
+
+        response = updateReviewResponse(updateDto, reviewId, authorId);
+
+        String responseContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseContent.contains("Review's id should be positive"));
+
+        verifyNoInteractions(reviewService);
+        verifyNoInteractions(reviewMapper);
+    }
+
+    @DisplayName("Валидация обновления отзыва - остутствие header")
+    @Test
+    void shouldThrowBadRequestWhenUpdateReviewNullAuthorId() throws Exception {
+        updateDto = createUpdateDto();
+        final Long reviewId = ++id;
+
+        response = mvc.perform(patch("/reviews/" + reviewId)
+                        .content(mapper.writeValueAsString(updateDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        String responseContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseContent.contains("Required request header "));
+        assertTrue(responseContent.contains("is not present"));
+
+        verifyNoInteractions(reviewService);
+        verifyNoInteractions(reviewMapper);
+    }
+
+    @DisplayName("Валидация обновления отзыва - authorId @Positive")
+    @Test
+    void shouldThrowBadRequestWhenUpdateReviewIncorrectAuthorId() throws Exception {
+        updateDto = createUpdateDto();
+        final Long reviewId = ++id;
+        final Long authorId = 0L;
+
+        response = updateReviewResponse(updateDto, reviewId, authorId);
+
+        String responseContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseContent.contains("User's id should be positive"));
+
+        verifyNoInteractions(reviewService);
+        verifyNoInteractions(reviewMapper);
+    }
+
+    @DisplayName("Валидация ReviewUpdateDto - username @Size")
+    @Test
+    void shouldThrowBadRequestWhenUpdateReviewIncorrectUsername() throws Exception {
+        updateDto = new ReviewUpdateDto("n".repeat(USERNAME_MIN_SIZE - 1), "other title", "content");
+        final Long reviewId = ++id;
+        final Long authorId = id;
+
+        response = updateReviewResponse(updateDto, reviewId, authorId);
+
+        String responseMinContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseMinContent.contains(USERNAME_SIZE_ERROR_MESSAGE));
+
+        ReviewUpdateDto maxUsernameDto = new ReviewUpdateDto("n".repeat(USERNAME_MAX_SIZE + 1),
+                "other title", "content");
+        MockHttpServletResponse MaxResponse = updateReviewResponse(maxUsernameDto, reviewId, authorId);;
+        String responseMaxContent = MaxResponse.getContentAsString();
+
+        assertEquals(400, MaxResponse.getStatus());
+        assertTrue(responseMaxContent.contains(USERNAME_SIZE_ERROR_MESSAGE));
+
+        verifyNoInteractions(reviewService);
+        verifyNoInteractions(reviewMapper);
+    }
+
+    @DisplayName("Валидация ReviewUpdateDto - title @Size")
+    @Test
+    void shouldThrowBadRequestWhenUpdateReviewIncorrectTitle() throws Exception {
+        updateDto = new ReviewUpdateDto("other name",
+                "t".repeat(TITLE_MAX_SIZE + 1), "content");
+        final Long reviewId = ++id;
+        final Long authorId = id;
+
+        response = updateReviewResponse(updateDto, reviewId, authorId);
+
+        String responseMinContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseMinContent.contains(TITLE_SIZE_ERROR_MESSAGE));
+
+        verifyNoInteractions(reviewService);
+        verifyNoInteractions(reviewMapper);
+    }
+
+    @DisplayName("Валидация ReviewUpdateDto - content @Size")
+    @Test
+    void shouldThrowBadRequestWhenUpdateReviewIncorrectContent() throws Exception {
+        updateDto = new ReviewUpdateDto("other name", "other title",
+                "c".repeat(CONTENT_MIN_SIZE - 1));
+        final Long reviewId = ++id;
+        final Long authorId = id;
+
+        response = updateReviewResponse(updateDto, reviewId, authorId);
+
+        String responseMinContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseMinContent.contains(CONTENT_SIZE_ERROR_MESSAGE));
+
+        ReviewUpdateDto maxContentDto = new ReviewUpdateDto("other name", "other title",
+                "c".repeat(CONTENT_MAX_SIZE + 1));
+        MockHttpServletResponse MaxResponse = updateReviewResponse(maxContentDto, reviewId, authorId);;
+        String responseMaxContent = MaxResponse.getContentAsString();
+
+        assertEquals(400, MaxResponse.getStatus());
+        assertTrue(responseMaxContent.contains(CONTENT_SIZE_ERROR_MESSAGE));
+
+        verifyNoInteractions(reviewService);
+        verifyNoInteractions(reviewMapper);
     }
 
     private ReviewDto createDto(Review review) {
