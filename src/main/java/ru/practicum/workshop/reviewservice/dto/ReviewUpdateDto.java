@@ -4,13 +4,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Size;
 import lombok.Value;
 
+import static ru.practicum.workshop.reviewservice.dto.ReviewDtoValidationConstants.*;
+
 @Value
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReviewUpdateDto {
-    @Size(min = 2, max = 250, message = "Username of review shouldn't be less then 2 and more than 250 characters")
+    @Size(min = USERNAME_MIN_SIZE, max = USERNAME_MAX_SIZE, message = USERNAME_SIZE_ERROR_MESSAGE)
     String username;
-    @Size(max = 120, message = "Title of review shouldn't be more than 120 characters")
+    @Size(max = TITLE_MAX_SIZE, message = TITLE_SIZE_ERROR_MESSAGE)
     String title;
-    @Size(min = 3, max = 10000, message = "Review content shouldn't be less then 3 and more than 10 000 characters")
+    @Size(min = CONTENT_MIN_SIZE, max = CONTENT_MAX_SIZE, message = CONTENT_SIZE_ERROR_MESSAGE)
     String content;
 }
