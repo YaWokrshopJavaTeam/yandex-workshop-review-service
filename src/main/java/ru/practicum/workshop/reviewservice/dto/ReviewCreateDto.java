@@ -3,20 +3,22 @@ package ru.practicum.workshop.reviewservice.dto;
 import jakarta.validation.constraints.*;
 import lombok.Value;
 
+import static ru.practicum.workshop.reviewservice.dto.ReviewDtoValidationConstants.*;
+
 @Value
 public class ReviewCreateDto {
-    @NotNull(message = "Author's id shouldn't be null")
-    @Positive(message = "Author's id should be positive")
+    @NotNull(message = AUTHOR_ID_NOT_NULL_ERROR_MESSAGE)
+    @Positive(message = AUTHOR_ID_POSITIVE_ERROR_MESSAGE)
     Long authorId;
-    @NotNull(message = "Event's id shouldn't be null")
-    @Positive(message = "Event's id should be positive")
+    @NotNull(message = EVENT_ID_NOT_NULL_ERROR_MESSAGE)
+    @Positive(message = EVENT_ID_POSITIVE_ERROR_MESSAGE)
     Long eventId;
-    @NotBlank(message = "Username shouldn't be blank")
-    @Size(min = 2, max = 250, message = "Username of review shouldn't be less then 2 and more than 250 characters")
+    @NotBlank(message = USERNAME_NOT_BLANK_ERROR_MESSAGE)
+    @Size(min = USERNAME_MIN_SIZE, max = USERNAME_MAX_SIZE, message = USERNAME_SIZE_ERROR_MESSAGE)
     String username;
-    @Size(max = 120, message = "Title of review shouldn't be more than 120 characters")
+    @Size(max = TITLE_MAX_SIZE, message = TITLE_SIZE_ERROR_MESSAGE)
     String title;
-    @NotBlank(message = "Review content shouldn't be blank")
-    @Size(min = 3, max = 10000, message = "Review content shouldn't be less then 3 and more than 10 000 characters")
+    @NotBlank(message = CONTENT_NOT_BLANK_ERROR_MESSAGE)
+    @Size(min = CONTENT_MIN_SIZE, max = CONTENT_MAX_SIZE, message = CONTENT_SIZE_ERROR_MESSAGE)
     String content;
 }
