@@ -2,11 +2,13 @@ package ru.practicum.workshop.reviewservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -17,6 +19,7 @@ import ru.practicum.workshop.reviewservice.dto.ReviewDto;
 import ru.practicum.workshop.reviewservice.dto.ReviewDtoWithAuthor;
 import ru.practicum.workshop.reviewservice.dto.ReviewUpdateDto;
 import ru.practicum.workshop.reviewservice.mapper.ReviewMapper;
+import ru.practicum.workshop.reviewservice.mapper.ReviewMapperImpl;
 import ru.practicum.workshop.reviewservice.model.Review;
 import ru.practicum.workshop.reviewservice.model.User;
 import ru.practicum.workshop.reviewservice.service.ReviewService;
@@ -33,14 +36,15 @@ import static ru.practicum.workshop.reviewservice.dto.ReviewDtoValidationConstan
 
 @WebMvcTest(controllers = ReviewController.class)
 @RequiredArgsConstructor(onConstructor_= @Autowired)
+@Import(ReviewMapperImpl.class)
 class ReviewControllerTest {
     private final MockMvc mvc;
     private final ObjectMapper mapper;
 
     @MockBean
     private final ReviewService reviewService;
-    @MockBean
-    private final ReviewMapper reviewMapper;
+
+    private static ReviewMapper reviewMapper;
 
     private ReviewCreateDto createDto;
     private ReviewDtoWithAuthor dtoWithAuthorId;
@@ -51,32 +55,13 @@ class ReviewControllerTest {
     private MvcResult result;
     private Long id = 0L;
 
+    @BeforeAll
+    static void beforeAll() {
+        reviewMapper = new ReviewMapperImpl();
+    }
+
     private ReviewCreateDto createCreationDto() {
         return new ReviewCreateDto(++id, id, "user", "title", "content", 1);
-    }
-
-    private ReviewDtoWithAuthor createDtoWithAuthor(Review review) {
-        return new ReviewDtoWithAuthor(review.getId(),
-                review.getAuthor().getId(),
-                review.getEventId(),
-                review.getAuthor().getUsername(),
-                review.getTitle(),
-                review.getContent(),
-                review.getCreatedOn(),
-                review.getUpdatedOn(),
-                review.getMark());
-    }
-
-    private Review createReviewFromCreate(ReviewCreateDto dto) {
-        return Review.builder()
-                .id(++id)
-                .author(new User(createDto.getAuthorId(), createDto.getUsername()))
-                .eventId(createDto.getEventId())
-                .title(createDto.getTitle())
-                .content(createDto.getContent())
-                .createdOn(LocalDateTime.now())
-                .mark(1)
-                .build();
     }
 
     private MockHttpServletResponse createReviewResponse(ReviewCreateDto dto) throws Exception {
@@ -93,15 +78,11 @@ class ReviewControllerTest {
     @Test
     void createReview() throws Exception {
         createDto = createCreationDto();
-        review = createReviewFromCreate(createDto);
-        dtoWithAuthorId = createDtoWithAuthor(review);
+        review = reviewMapper.toEntity(createDto);
+        dtoWithAuthorId = reviewMapper.toDtoWithAuthor(review);
 
-        when(reviewMapper.toEntity(any(ReviewCreateDto.class)))
-                .thenReturn(review);
         when(reviewService.createReview(any(Review.class)))
                 .thenReturn(review);
-        when(reviewMapper.toDtoWithAuthor(any(Review.class)))
-                .thenReturn(dtoWithAuthorId);
 
         response = createReviewResponse(createDto);
 
@@ -111,12 +92,6 @@ class ReviewControllerTest {
         verify(reviewService, times(1))
                 .createReview(any(Review.class));
         verifyNoMoreInteractions(reviewService);
-
-        verify(reviewMapper, times(1))
-                .toEntity(any(ReviewCreateDto.class));
-        verify(reviewMapper, times(1))
-                .toDtoWithAuthor(any(Review.class));
-        verifyNoMoreInteractions(reviewMapper);
     }
 
     @DisplayName("Валидация ReviewCreateDto null authorId")
@@ -131,7 +106,6 @@ class ReviewControllerTest {
         assertTrue(responseContent.contains(AUTHOR_ID_NOT_NULL_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);
-        verifyNoInteractions(reviewMapper);
     }
 
     @DisplayName("Валидация ReviewCreateDto authorId @Positive")
@@ -146,7 +120,6 @@ class ReviewControllerTest {
         assertTrue(responseContent.contains(AUTHOR_ID_POSITIVE_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);
-        verifyNoInteractions(reviewMapper);
     }
 
     @DisplayName("Валидация ReviewCreateDto null eventId")
@@ -161,7 +134,6 @@ class ReviewControllerTest {
         assertTrue(responseContent.contains(EVENT_ID_NOT_NULL_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);
-        verifyNoInteractions(reviewMapper);
     }
 
     @DisplayName("Валидация ReviewCreateDto eventId @Positive")
@@ -176,7 +148,6 @@ class ReviewControllerTest {
         assertTrue(responseContent.contains(EVENT_ID_POSITIVE_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);
-        verifyNoInteractions(reviewMapper);
     }
 
     @DisplayName("Валидация ReviewCreateDto username @NotBlank")
@@ -198,7 +169,6 @@ class ReviewControllerTest {
         assertTrue(responseNullContent.contains(USERNAME_NOT_BLANK_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);
-        verifyNoInteractions(reviewMapper);
     }
 
     @DisplayName("Валидация ReviewCreateDto username @Size")
@@ -222,7 +192,6 @@ class ReviewControllerTest {
         assertTrue(responseMaxContent.contains(USERNAME_SIZE_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);
-        verifyNoInteractions(reviewMapper);
     }
 
     @DisplayName("Валидация ReviewCreateDto title @Size")
@@ -242,7 +211,6 @@ class ReviewControllerTest {
         assertTrue(responseBlankContent.contains(TITLE_SIZE_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);
-        verifyNoInteractions(reviewMapper);
     }
 
     @DisplayName("Валидация ReviewCreateDto content @NotBlank")
@@ -266,7 +234,6 @@ class ReviewControllerTest {
         assertTrue(responseNullContent.contains(CONTENT_NOT_BLANK_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);
-        verifyNoInteractions(reviewMapper);
     }
 
     @DisplayName("Валидация ReviewCreateDto content @Size")
@@ -290,21 +257,48 @@ class ReviewControllerTest {
         assertTrue(responseMaxContent.contains(CONTENT_SIZE_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);
-        verifyNoInteractions(reviewMapper);
+    }
+
+    @DisplayName("Валидация ReviewCreateDto mark @NotNull")
+    @Test
+    void shouldThrowBadRequest_WhenCreateReviewNullMark() throws Exception {
+        createDto = new ReviewCreateDto(++id, id, "user", "title",
+                "content", null);
+
+        response = createReviewResponse(createDto);
+
+        String responseContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseContent.contains(MARK_NOT_NULL_ERROR_MESSAGE));
+
+        verifyNoInteractions(reviewService);
+    }
+
+    @DisplayName("Валидация ReviewCreateDto mark @Min и @Max")
+    @Test
+    void shouldThrowBadRequest_WhenCreateReviewIncorrectMark() throws Exception {
+        createDto = new ReviewCreateDto(++id, id, "user", "title",
+                "content", MARK_MIN_VALUE - 1);
+
+        response = createReviewResponse(createDto);
+
+        String responseMinContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseMinContent.contains(MARK_MIN_ERROR_MESSAGE));
+
+        ReviewCreateDto maxUsernameDto = new ReviewCreateDto(++id, id, "user", "title",
+                "content", MARK_MAX_VALUE + 1);
+        MockHttpServletResponse MaxResponse = createReviewResponse(maxUsernameDto);
+        String responseMaxContent = MaxResponse.getContentAsString();
+
+        assertEquals(400, MaxResponse.getStatus());
+        assertTrue(responseMaxContent.contains(MARK_MAX_ERROR_MESSAGE));
+
+        verifyNoInteractions(reviewService);
     }
 
     private ReviewUpdateDto createUpdateDto() {
         return new ReviewUpdateDto("other name", "other title", "other content", 1);
-    }
-
-    private Review createReviewFromUpdate(ReviewUpdateDto dto, Long reviewId, Long authorId) {
-        return Review.builder()
-                .id(reviewId)
-                .author(new User(authorId, dto.getUsername()))
-                .title(dto.getTitle())
-                .content(dto.getContent())
-                .updatedOn(LocalDateTime.now())
-                .build();
     }
 
     private MockHttpServletResponse updateReviewResponse(ReviewUpdateDto dto, Long reviewId, Long authorId) throws Exception {
@@ -324,15 +318,11 @@ class ReviewControllerTest {
         updateDto = createUpdateDto();
         final Long reviewId = ++id;
         final Long authorId = id++;
-        review = createReviewFromUpdate(updateDto, reviewId, authorId);
-        dtoWithAuthorId = createDtoWithAuthor(review);
+        review = reviewMapper.toEntity(updateDto, reviewId, authorId);
+        dtoWithAuthorId = reviewMapper.toDtoWithAuthor(review);
 
-        when(reviewMapper.toEntity(any(ReviewUpdateDto.class), any(Long.class), any(Long.class)))
-                .thenReturn(review);
         when(reviewService.updateReview(any(Review.class)))
                 .thenReturn(review);
-        when(reviewMapper.toDtoWithAuthor(any(Review.class)))
-                .thenReturn(dtoWithAuthorId);
 
         response = updateReviewResponse(updateDto, reviewId, authorId);
 
@@ -342,12 +332,6 @@ class ReviewControllerTest {
         verify(reviewService, times(1))
                 .updateReview(any(Review.class));
         verifyNoMoreInteractions(reviewService);
-
-        verify(reviewMapper, times(1))
-                .toEntity(any(ReviewUpdateDto.class), any(Long.class), any(Long.class));
-        verify(reviewMapper, times(1))
-                .toDtoWithAuthor(any(Review.class));
-        verifyNoMoreInteractions(reviewMapper);
     }
 
     @DisplayName("Валидация обновления отзыва - reviewId @Positive")
@@ -364,7 +348,6 @@ class ReviewControllerTest {
         assertTrue(responseContent.contains("Review's id should be positive"));
 
         verifyNoInteractions(reviewService);
-        verifyNoInteractions(reviewMapper);
     }
 
     @DisplayName("Валидация обновления отзыва - остутствие header")
@@ -386,7 +369,6 @@ class ReviewControllerTest {
         assertTrue(responseContent.contains("is not present"));
 
         verifyNoInteractions(reviewService);
-        verifyNoInteractions(reviewMapper);
     }
 
     @DisplayName("Валидация обновления отзыва - authorId @Positive")
@@ -403,7 +385,6 @@ class ReviewControllerTest {
         assertTrue(responseContent.contains("User's id should be positive"));
 
         verifyNoInteractions(reviewService);
-        verifyNoInteractions(reviewMapper);
     }
 
     @DisplayName("Валидация ReviewUpdateDto - username @Size")
@@ -429,7 +410,6 @@ class ReviewControllerTest {
         assertTrue(responseMaxContent.contains(USERNAME_SIZE_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);
-        verifyNoInteractions(reviewMapper);
     }
 
     @DisplayName("Валидация ReviewUpdateDto - title @Size")
@@ -447,7 +427,6 @@ class ReviewControllerTest {
         assertTrue(responseMinContent.contains(TITLE_SIZE_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);
-        verifyNoInteractions(reviewMapper);
     }
 
     @DisplayName("Валидация ReviewUpdateDto - content @Size")
@@ -473,18 +452,31 @@ class ReviewControllerTest {
         assertTrue(responseMaxContent.contains(CONTENT_SIZE_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);
-        verifyNoInteractions(reviewMapper);
     }
 
-    private ReviewDto createDto(Review review) {
-        return new ReviewDto(review.getId(),
-                review.getEventId(),
-                review.getAuthor().getUsername(),
-                review.getTitle(),
-                review.getContent(),
-                review.getCreatedOn(),
-                review.getUpdatedOn(),
-                review.getMark());
+    @DisplayName("Валидация ReviewUpdateDto - mark @Min и @Max")
+    @Test
+    void shouldThrowBadRequest_WhenUpdateReviewIncorrectMark() throws Exception {
+        updateDto = new ReviewUpdateDto("user", "title",
+                "content", MARK_MIN_VALUE - 1);
+        final Long reviewId = ++id;
+        final Long authorId = id;
+
+        response = updateReviewResponse(updateDto, reviewId, authorId);
+
+        String responseMinContent = response.getContentAsString();
+        assertEquals(400, response.getStatus());
+        assertTrue(responseMinContent.contains(MARK_MIN_ERROR_MESSAGE));
+
+        ReviewUpdateDto maxMarkDto = new ReviewUpdateDto("user", "title",
+                "content", MARK_MAX_VALUE + 1);
+        MockHttpServletResponse MaxResponse = updateReviewResponse(maxMarkDto, reviewId, authorId);
+        String responseMaxContent = MaxResponse.getContentAsString();
+
+        assertEquals(400, MaxResponse.getStatus());
+        assertTrue(responseMaxContent.contains(MARK_MAX_ERROR_MESSAGE));
+
+        verifyNoInteractions(reviewService);
     }
 
     private MockHttpServletResponse getReviewResponse(Long id) throws Exception {
@@ -498,15 +490,13 @@ class ReviewControllerTest {
     @Test
     void getReviewById() throws Exception {
         createDto = createCreationDto();
-        review = createReviewFromCreate(createDto);
-        dto = createDto(review);
+        review = reviewMapper.toEntity(createDto);
+        dto = reviewMapper.toDtoWithoutAuthor(review);
 
         when(reviewService.getReviewById(any(Long.class)))
                 .thenReturn(review);
-        when(reviewMapper.toDtoWithoutAuthor(any(Review.class)))
-                .thenReturn(dto);
 
-        response = getReviewResponse(review.getId());
+        response = getReviewResponse(++id);
 
         assertEquals(200, response.getStatus());
         assertEquals(mapper.writeValueAsString(dto), response.getContentAsString());
@@ -514,10 +504,6 @@ class ReviewControllerTest {
         verify(reviewService, times(1))
                 .getReviewById(any(Long.class));
         verifyNoMoreInteractions(reviewService);
-
-        verify(reviewMapper, times(1))
-                .toDtoWithoutAuthor(any(Review.class));
-        verifyNoMoreInteractions(reviewMapper);
     }
 
     private MockHttpServletResponse getReviewsByEventResponse(Long id, int page, int size) throws Exception {
@@ -534,13 +520,11 @@ class ReviewControllerTest {
     @Test
     void getReviewsByEventId() throws Exception {
         createDto = createCreationDto();
-        review = createReviewFromCreate(createDto);
-        dto = createDto(review);
+        review = reviewMapper.toEntity(createDto);
+        dto = reviewMapper.toDtoWithoutAuthor(review);
 
         when(reviewService.getReviewsByEvent(any(Long.class), any(Pageable.class)))
                 .thenReturn(List.of(review));
-        when(reviewMapper.toDtoWithoutAuthor(any(Review.class)))
-                .thenReturn(dto);
 
         response = getReviewsByEventResponse(review.getEventId(), 0, 5);
 
@@ -550,10 +534,6 @@ class ReviewControllerTest {
         verify(reviewService, times(1))
                 .getReviewsByEvent(any(Long.class), any(Pageable.class));
         verifyNoMoreInteractions(reviewService);
-
-        verify(reviewMapper, times(1))
-                .toDtoWithoutAuthor(any(Review.class));
-        verifyNoMoreInteractions(reviewMapper);
     }
 
     private MockHttpServletResponse deleteReviewResponse(Long reviewId, Long authorId) throws Exception {
