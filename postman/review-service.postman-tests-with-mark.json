@@ -1,0 +1,4920 @@
+{
+	"info": {
+		"_postman_id": "de0cc886-c754-4926-baa3-21f3208e244f",
+		"name": "review-service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33433593"
+	},
+	"item": [
+		{
+			"name": "Validation",
+			"item": [
+				{
+					"name": "String length restrict",
+					"item": [
+						{
+							"name": "Добавление отзыва с username меньше 2 знаков",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    let review;\r",
+											"    try {\r",
+											"        review = rnd.getReview();\r",
+											"        review.username = rnd.getWord(1);\r",
+											"        console.log(\"review.authorId = \" + review.authorId);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"\r",
+											"    pm.request.body.update({\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(review),\r",
+											"        options: { raw: { language: 'json' } }\r",
+											"    });\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Добавление отзыва с username == 2 знака",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    let review;\r",
+											"    try {\r",
+											"        review = rnd.getReview();\r",
+											"        review.username = rnd.getWord(2);\r",
+											"        console.log(\"review.authorId = \" + review.authorId);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"\r",
+											"    pm.request.body.update({\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(review),\r",
+											"        options: { raw: { language: 'json' } }\r",
+											"    });\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const source = JSON.parse(pm.request.body.raw);\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+											"pm.expect(target).to.have.property('id');\r",
+											"pm.expect(target).to.have.property('authorId');\r",
+											"pm.expect(target).to.have.property('eventId');\r",
+											"pm.expect(target).to.have.property('username');\r",
+											"pm.expect(target).to.have.property('title');\r",
+											"pm.expect(target).to.have.property('content');\r",
+											"pm.expect(target).to.have.property('createdOn');\r",
+											"pm.expect(target).to.have.property('updatedOn');\r",
+											"pm.expect(target).to.have.property('mark');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+											"    pm.expect(target.id).to.not.be.null;\r",
+											"    pm.expect(target.updatedOn).to.be.null;\r",
+											"    pm.expect(target.createdOn).to.not.be.null;\r",
+											"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Добавление отзыва с username больше 250 знаков",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    let review;\r",
+											"    try {\r",
+											"        review = rnd.getReview();\r",
+											"        review.username = rnd.getWord(251);\r",
+											"        console.log(\"review.authorId = \" + review.authorId);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"\r",
+											"    pm.request.body.update({\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(review),\r",
+											"        options: { raw: { language: 'json' } }\r",
+											"    });\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Добавление отзыва с username == 250 знаков",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    let review;\r",
+											"    try {\r",
+											"        review = rnd.getReview();\r",
+											"        review.username = rnd.getWord(250);\r",
+											"        console.log(\"review.authorId = \" + review.authorId);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"\r",
+											"    pm.request.body.update({\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(review),\r",
+											"        options: { raw: { language: 'json' } }\r",
+											"    });\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const source = JSON.parse(pm.request.body.raw);\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+											"pm.expect(target).to.have.property('id');\r",
+											"pm.expect(target).to.have.property('authorId');\r",
+											"pm.expect(target).to.have.property('eventId');\r",
+											"pm.expect(target).to.have.property('username');\r",
+											"pm.expect(target).to.have.property('title');\r",
+											"pm.expect(target).to.have.property('content');\r",
+											"pm.expect(target).to.have.property('createdOn');\r",
+											"pm.expect(target).to.have.property('updatedOn');\r",
+											"pm.expect(target).to.have.property('mark');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+											"    pm.expect(target.id).to.not.be.null;\r",
+											"    pm.expect(target.updatedOn).to.be.null;\r",
+											"    pm.expect(target.createdOn).to.not.be.null;\r",
+											"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Добавление отзыва с title больше 120 знаков",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    let review;\r",
+											"    try {\r",
+											"        review = rnd.getReview();\r",
+											"        review.title = rnd.getWord(121);\r",
+											"        console.log(\"review.authorId = \" + review.authorId);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"\r",
+											"    pm.request.body.update({\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(review),\r",
+											"        options: { raw: { language: 'json' } }\r",
+											"    });\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Добавление отзыва с title == 120 знаков",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    let review;\r",
+											"    try {\r",
+											"        review = rnd.getReview();\r",
+											"        review.title = rnd.getWord(120);\r",
+											"        console.log(\"review.authorId = \" + review.authorId);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"\r",
+											"    pm.request.body.update({\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(review),\r",
+											"        options: { raw: { language: 'json' } }\r",
+											"    });\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const source = JSON.parse(pm.request.body.raw);\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+											"pm.expect(target).to.have.property('id');\r",
+											"pm.expect(target).to.have.property('authorId');\r",
+											"pm.expect(target).to.have.property('eventId');\r",
+											"pm.expect(target).to.have.property('username');\r",
+											"pm.expect(target).to.have.property('title');\r",
+											"pm.expect(target).to.have.property('content');\r",
+											"pm.expect(target).to.have.property('createdOn');\r",
+											"pm.expect(target).to.have.property('updatedOn');\r",
+											"pm.expect(target).to.have.property('mark');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+											"    pm.expect(target.id).to.not.be.null;\r",
+											"    pm.expect(target.updatedOn).to.be.null;\r",
+											"    pm.expect(target.createdOn).to.not.be.null;\r",
+											"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Добавление отзыва без title",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    let review;\r",
+											"    try {\r",
+											"        review = rnd.getReview();\r",
+											"        review.title = null;\r",
+											"        console.log(\"review.authorId = \" + review.authorId);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"\r",
+											"    pm.request.body.update({\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(review),\r",
+											"        options: { raw: { language: 'json' } }\r",
+											"    });\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const source = JSON.parse(pm.request.body.raw);\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+											"pm.expect(target).to.have.property('id');\r",
+											"pm.expect(target).to.have.property('authorId');\r",
+											"pm.expect(target).to.have.property('eventId');\r",
+											"pm.expect(target).to.have.property('username');\r",
+											"pm.expect(target).to.have.property('title');\r",
+											"pm.expect(target).to.have.property('content');\r",
+											"pm.expect(target).to.have.property('createdOn');\r",
+											"pm.expect(target).to.have.property('updatedOn');\r",
+											"pm.expect(target).to.have.property('mark');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+											"    pm.expect(target.id).to.not.be.null;\r",
+											"    pm.expect(target.updatedOn).to.be.null;\r",
+											"    pm.expect(target.createdOn).to.not.be.null;\r",
+											"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Добавление отзыва с content меньше 3 знаков",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    let review;\r",
+											"    try {\r",
+											"        review = rnd.getReview();\r",
+											"        review.content = rnd.getWord(2);\r",
+											"        console.log(\"review.authorId = \" + review.authorId);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"\r",
+											"    pm.request.body.update({\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(review),\r",
+											"        options: { raw: { language: 'json' } }\r",
+											"    });\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Добавление отзыва с content == 3 знака",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    let review;\r",
+											"    try {\r",
+											"        review = rnd.getReview();\r",
+											"        review.content = rnd.getWord(3);\r",
+											"        console.log(\"review.authorId = \" + review.authorId);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"\r",
+											"    pm.request.body.update({\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(review),\r",
+											"        options: { raw: { language: 'json' } }\r",
+											"    });\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const source = JSON.parse(pm.request.body.raw);\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+											"pm.expect(target).to.have.property('id');\r",
+											"pm.expect(target).to.have.property('authorId');\r",
+											"pm.expect(target).to.have.property('eventId');\r",
+											"pm.expect(target).to.have.property('username');\r",
+											"pm.expect(target).to.have.property('title');\r",
+											"pm.expect(target).to.have.property('content');\r",
+											"pm.expect(target).to.have.property('createdOn');\r",
+											"pm.expect(target).to.have.property('updatedOn');\r",
+											"pm.expect(target).to.have.property('mark');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+											"    pm.expect(target.id).to.not.be.null;\r",
+											"    pm.expect(target.updatedOn).to.be.null;\r",
+											"    pm.expect(target.createdOn).to.not.be.null;\r",
+											"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Добавление отзыва с content больше 10000 знаков",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    let review;\r",
+											"    try {\r",
+											"        review = rnd.getReview();\r",
+											"        review.content = rnd.getWord(10001);\r",
+											"        console.log(\"review.authorId = \" + review.authorId);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"\r",
+											"    pm.request.body.update({\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(review),\r",
+											"        options: { raw: { language: 'json' } }\r",
+											"    });\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Добавление отзыва с content == 10000 знаков",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    let review;\r",
+											"    try {\r",
+											"        review = rnd.getReview();\r",
+											"        review.content = rnd.getWord(10000);\r",
+											"        console.log(\"review.authorId = \" + review.authorId);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"\r",
+											"    pm.request.body.update({\r",
+											"        mode: 'raw',\r",
+											"        raw: JSON.stringify(review),\r",
+											"        options: { raw: { language: 'json' } }\r",
+											"    });\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const source = JSON.parse(pm.request.body.raw);\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+											"pm.expect(target).to.have.property('id');\r",
+											"pm.expect(target).to.have.property('authorId');\r",
+											"pm.expect(target).to.have.property('eventId');\r",
+											"pm.expect(target).to.have.property('username');\r",
+											"pm.expect(target).to.have.property('title');\r",
+											"pm.expect(target).to.have.property('content');\r",
+											"pm.expect(target).to.have.property('createdOn');\r",
+											"pm.expect(target).to.have.property('updatedOn');\r",
+											"pm.expect(target).to.have.property('mark');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+											"    pm.expect(target.id).to.not.be.null;\r",
+											"    pm.expect(target.updatedOn).to.be.null;\r",
+											"    pm.expect(target.createdOn).to.not.be.null;\r",
+											"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Обновление отзыва с username < 2 знаков",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        let review = await api.addReview(rnd.getReview());\r",
+											"        let updatedReview = rnd.getReview();\r",
+											"\r",
+											"        updatedReview.username = rnd.getWord(1);\r",
+											"\r",
+											"        updatedReview.authorId = review.authorId;\r",
+											"        updatedReview.eventId = review.eventId;\r",
+											"        updatedReview.createdOn = review.createdOn;\r",
+											"        updatedReview.mark = review.mark;\r",
+											"        pm.collectionVariables.set('response', updatedReview);\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        pm.request.body.update({\r",
+											"            mode: 'raw',\r",
+											"            raw: updatedReview,\r",
+											"            options: { raw: { language: 'json' } }\r",
+											"        });\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{authorId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews/:reviewId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										":reviewId"
+									],
+									"variable": [
+										{
+											"key": "reviewId",
+											"value": "{{reviewId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Обновление отзыва с username == 2 знака",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        let review = await api.addReview(rnd.getReview());\r",
+											"        let updatedReview = rnd.getReview();\r",
+											"\r",
+											"        updatedReview.username = rnd.getWord(2);\r",
+											"\r",
+											"        updatedReview.authorId = review.authorId;\r",
+											"        updatedReview.eventId = review.eventId;\r",
+											"        updatedReview.createdOn = review.createdOn;\r",
+											"        updatedReview.mark = review.mark;\r",
+											"        pm.collectionVariables.set('response', updatedReview);\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        pm.request.body.update({\r",
+											"            mode: 'raw',\r",
+											"            raw: updatedReview,\r",
+											"            options: { raw: { language: 'json' } }\r",
+											"        });\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.ok;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const reviewId = pm.collectionVariables.get('reviewId');\r",
+											"const source = pm.collectionVariables.get('response');\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+											"pm.expect(target).to.have.property('id');\r",
+											"pm.expect(target).to.have.property('authorId');\r",
+											"pm.expect(target).to.have.property('eventId');\r",
+											"pm.expect(target).to.have.property('username');\r",
+											"pm.expect(target).to.have.property('title');\r",
+											"pm.expect(target).to.have.property('content');\r",
+											"pm.expect(target).to.have.property('createdOn');\r",
+											"pm.expect(target).to.have.property('updatedOn');\r",
+											"pm.expect(target).to.have.property('mark');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+											"    pm.expect(reviewId).equals(target.id, 'Id отзыва должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(target.updatedOn).to.not.be.null;\r",
+											"    pm.expect(Date.parse(target.updatedOn)).to.be.above(Date.parse(target.createdOn));\r",
+											"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должно соответствовать изменяемому отзыву');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{authorId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews/:reviewId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										":reviewId"
+									],
+									"variable": [
+										{
+											"key": "reviewId",
+											"value": "{{reviewId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Обновление отзыва с username > 250 знаков",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        let review = await api.addReview(rnd.getReview());\r",
+											"        let updatedReview = rnd.getReview();\r",
+											"\r",
+											"        updatedReview.username = rnd.getWord(251);\r",
+											"\r",
+											"        updatedReview.authorId = review.authorId;\r",
+											"        updatedReview.eventId = review.eventId;\r",
+											"        updatedReview.createdOn = review.createdOn;\r",
+											"        updatedReview.mark = review.mark;\r",
+											"        pm.collectionVariables.set('response', updatedReview);\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        pm.request.body.update({\r",
+											"            mode: 'raw',\r",
+											"            raw: updatedReview,\r",
+											"            options: { raw: { language: 'json' } }\r",
+											"        });\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{authorId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews/:reviewId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										":reviewId"
+									],
+									"variable": [
+										{
+											"key": "reviewId",
+											"value": "{{reviewId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Обновление отзыва с username == 250 знаков",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        let review = await api.addReview(rnd.getReview());\r",
+											"        let updatedReview = rnd.getReview();\r",
+											"\r",
+											"        updatedReview.username = rnd.getWord(250);\r",
+											"\r",
+											"        updatedReview.authorId = review.authorId;\r",
+											"        updatedReview.eventId = review.eventId;\r",
+											"        updatedReview.createdOn = review.createdOn;\r",
+											"        updatedReview.mark = review.mark;\r",
+											"        pm.collectionVariables.set('response', updatedReview);\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        pm.request.body.update({\r",
+											"            mode: 'raw',\r",
+											"            raw: updatedReview,\r",
+											"            options: { raw: { language: 'json' } }\r",
+											"        });\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.ok;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const reviewId = pm.collectionVariables.get('reviewId');\r",
+											"const source = pm.collectionVariables.get('response');\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+											"pm.expect(target).to.have.property('id');\r",
+											"pm.expect(target).to.have.property('authorId');\r",
+											"pm.expect(target).to.have.property('eventId');\r",
+											"pm.expect(target).to.have.property('username');\r",
+											"pm.expect(target).to.have.property('title');\r",
+											"pm.expect(target).to.have.property('content');\r",
+											"pm.expect(target).to.have.property('createdOn');\r",
+											"pm.expect(target).to.have.property('updatedOn');\r",
+											"pm.expect(target).to.have.property('mark');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+											"    pm.expect(reviewId).equals(target.id, 'Id отзыва должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(target.updatedOn).to.not.be.null;\r",
+											"    pm.expect(Date.parse(target.updatedOn)).to.be.above(Date.parse(target.createdOn));\r",
+											"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должно соответствовать изменяемому отзыву');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{authorId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews/:reviewId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										":reviewId"
+									],
+									"variable": [
+										{
+											"key": "reviewId",
+											"value": "{{reviewId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Обновление отзыва с username == null",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        let review = await api.addReview(rnd.getReview());\r",
+											"        let updatedReview = rnd.getReview();\r",
+											"\r",
+											"        updatedReview.username = null;\r",
+											"\r",
+											"        updatedReview.authorId = review.authorId;\r",
+											"        updatedReview.eventId = review.eventId;\r",
+											"        updatedReview.createdOn = review.createdOn;\r",
+											"        updatedReview.mark = review.mark;\r",
+											"        pm.collectionVariables.set('savedReview', review);\r",
+											"        pm.collectionVariables.set('response', updatedReview);\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        pm.request.body.update({\r",
+											"            mode: 'raw',\r",
+											"            raw: updatedReview,\r",
+											"            options: { raw: { language: 'json' } }\r",
+											"        });\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.ok;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const savedReview = pm.collectionVariables.get('savedReview');\r",
+											"const reviewId = pm.collectionVariables.get('reviewId');\r",
+											"const source = pm.collectionVariables.get('response');\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+											"pm.expect(target).to.have.property('id');\r",
+											"pm.expect(target).to.have.property('authorId');\r",
+											"pm.expect(target).to.have.property('eventId');\r",
+											"pm.expect(target).to.have.property('username');\r",
+											"pm.expect(target).to.have.property('title');\r",
+											"pm.expect(target).to.have.property('content');\r",
+											"pm.expect(target).to.have.property('createdOn');\r",
+											"pm.expect(target).to.have.property('updatedOn');\r",
+											"pm.expect(target).to.have.property('mark');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+											"    pm.expect(reviewId).equals(target.id, 'Id отзыва должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(target.updatedOn).to.not.be.null;\r",
+											"    pm.expect(Date.parse(target.updatedOn)).to.be.above(Date.parse(target.createdOn));\r",
+											"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(savedReview.username).equal(target.username, 'Имя автора должно соответствовать сохранённому ранее');\r",
+											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должно соответствовать изменяемому отзыву');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{authorId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews/:reviewId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										":reviewId"
+									],
+									"variable": [
+										{
+											"key": "reviewId",
+											"value": "{{reviewId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Обновление отзыва с title > 120 знаков",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        let review = await api.addReview(rnd.getReview());\r",
+											"        let updatedReview = rnd.getReview();\r",
+											"\r",
+											"        updatedReview.title = rnd.getWord(121);\r",
+											"\r",
+											"        updatedReview.authorId = review.authorId;\r",
+											"        updatedReview.eventId = review.eventId;\r",
+											"        updatedReview.createdOn = review.createdOn;\r",
+											"        updatedReview.mark = review.mark;\r",
+											"        pm.collectionVariables.set('response', updatedReview);\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        pm.request.body.update({\r",
+											"            mode: 'raw',\r",
+											"            raw: updatedReview,\r",
+											"            options: { raw: { language: 'json' } }\r",
+											"        });\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{authorId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews/:reviewId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										":reviewId"
+									],
+									"variable": [
+										{
+											"key": "reviewId",
+											"value": "{{reviewId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Обновление отзыва с title == 120 знаков",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        let review = await api.addReview(rnd.getReview());\r",
+											"        let updatedReview = rnd.getReview();\r",
+											"\r",
+											"        updatedReview.title = rnd.getWord(120);\r",
+											"\r",
+											"        updatedReview.authorId = review.authorId;\r",
+											"        updatedReview.eventId = review.eventId;\r",
+											"        updatedReview.createdOn = review.createdOn;\r",
+											"        updatedReview.mark = review.mark;\r",
+											"        pm.collectionVariables.set('response', updatedReview);\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        pm.request.body.update({\r",
+											"            mode: 'raw',\r",
+											"            raw: updatedReview,\r",
+											"            options: { raw: { language: 'json' } }\r",
+											"        });\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.ok;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const reviewId = pm.collectionVariables.get('reviewId');\r",
+											"const source = pm.collectionVariables.get('response');\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+											"pm.expect(target).to.have.property('id');\r",
+											"pm.expect(target).to.have.property('authorId');\r",
+											"pm.expect(target).to.have.property('eventId');\r",
+											"pm.expect(target).to.have.property('username');\r",
+											"pm.expect(target).to.have.property('title');\r",
+											"pm.expect(target).to.have.property('content');\r",
+											"pm.expect(target).to.have.property('createdOn');\r",
+											"pm.expect(target).to.have.property('updatedOn');\r",
+											"pm.expect(target).to.have.property('mark');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+											"    pm.expect(reviewId).equals(target.id, 'Id отзыва должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(target.updatedOn).to.not.be.null;\r",
+											"    pm.expect(Date.parse(target.updatedOn)).to.be.above(Date.parse(target.createdOn));\r",
+											"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должно соответствовать изменяемому отзыву');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{authorId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews/:reviewId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										":reviewId"
+									],
+									"variable": [
+										{
+											"key": "reviewId",
+											"value": "{{reviewId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Обновление отзыва с title == null",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        let review = await api.addReview(rnd.getReview());\r",
+											"        let updatedReview = rnd.getReview();\r",
+											"\r",
+											"        updatedReview.title = null;\r",
+											"\r",
+											"        updatedReview.authorId = review.authorId;\r",
+											"        updatedReview.eventId = review.eventId;\r",
+											"        updatedReview.createdOn = review.createdOn;\r",
+											"        updatedReview.mark = review.mark;\r",
+											"        pm.collectionVariables.set('savedReview', review);\r",
+											"        pm.collectionVariables.set('response', updatedReview);\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        pm.request.body.update({\r",
+											"            mode: 'raw',\r",
+											"            raw: updatedReview,\r",
+											"            options: { raw: { language: 'json' } }\r",
+											"        });\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.ok;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const savedReview = pm.collectionVariables.get('savedReview');\r",
+											"const reviewId = pm.collectionVariables.get('reviewId');\r",
+											"const source = pm.collectionVariables.get('response');\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+											"pm.expect(target).to.have.property('id');\r",
+											"pm.expect(target).to.have.property('authorId');\r",
+											"pm.expect(target).to.have.property('eventId');\r",
+											"pm.expect(target).to.have.property('username');\r",
+											"pm.expect(target).to.have.property('title');\r",
+											"pm.expect(target).to.have.property('content');\r",
+											"pm.expect(target).to.have.property('createdOn');\r",
+											"pm.expect(target).to.have.property('updatedOn');\r",
+											"pm.expect(target).to.have.property('mark');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+											"    pm.expect(savedReview.title).equal(target.title, 'Заголовок отзыва должен соответствовать сохранённому ранее');\r",
+											"    pm.expect(reviewId).equals(target.id, 'Id отзыва должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(target.updatedOn).to.not.be.null;\r",
+											"    pm.expect(Date.parse(target.updatedOn)).to.be.above(Date.parse(target.createdOn));\r",
+											"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должно соответствовать изменяемому отзыву');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{authorId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews/:reviewId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										":reviewId"
+									],
+									"variable": [
+										{
+											"key": "reviewId",
+											"value": "{{reviewId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Обновление отзыва с пустым title",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        let review = await api.addReview(rnd.getReview());\r",
+											"        let updatedReview = rnd.getReview();\r",
+											"\r",
+											"        updatedReview.title = '';\r",
+											"\r",
+											"        updatedReview.authorId = review.authorId;\r",
+											"        updatedReview.eventId = review.eventId;\r",
+											"        updatedReview.createdOn = review.createdOn;\r",
+											"        updatedReview.mark = review.mark;\r",
+											"        pm.collectionVariables.set('savedReview', review);\r",
+											"        pm.collectionVariables.set('response', updatedReview);\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        pm.request.body.update({\r",
+											"            mode: 'raw',\r",
+											"            raw: updatedReview,\r",
+											"            options: { raw: { language: 'json' } }\r",
+											"        });\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.ok;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const reviewId = pm.collectionVariables.get('reviewId');\r",
+											"const source = pm.collectionVariables.get('response');\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+											"pm.expect(target).to.have.property('id');\r",
+											"pm.expect(target).to.have.property('authorId');\r",
+											"pm.expect(target).to.have.property('eventId');\r",
+											"pm.expect(target).to.have.property('username');\r",
+											"pm.expect(target).to.have.property('title');\r",
+											"pm.expect(target).to.have.property('content');\r",
+											"pm.expect(target).to.have.property('createdOn');\r",
+											"pm.expect(target).to.have.property('updatedOn');\r",
+											"pm.expect(target).to.have.property('mark');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+											"    pm.expect(reviewId).equals(target.id, 'Id отзыва должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(target.updatedOn).to.not.be.null;\r",
+											"    pm.expect(Date.parse(target.updatedOn)).to.be.above(Date.parse(target.createdOn));\r",
+											"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должно соответствовать изменяемому отзыву');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{authorId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews/:reviewId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										":reviewId"
+									],
+									"variable": [
+										{
+											"key": "reviewId",
+											"value": "{{reviewId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Обновление отзыва с content > 10000 знаков",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        let review = await api.addReview(rnd.getReview());\r",
+											"        let updatedReview = rnd.getReview();\r",
+											"\r",
+											"        updatedReview.content = rnd.getWord(10001);\r",
+											"\r",
+											"        updatedReview.authorId = review.authorId;\r",
+											"        updatedReview.eventId = review.eventId;\r",
+											"        updatedReview.createdOn = review.createdOn;\r",
+											"        updatedReview.mark = review.mark;\r",
+											"        pm.collectionVariables.set('response', updatedReview);\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        pm.request.body.update({\r",
+											"            mode: 'raw',\r",
+											"            raw: updatedReview,\r",
+											"            options: { raw: { language: 'json' } }\r",
+											"        });\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{authorId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews/:reviewId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										":reviewId"
+									],
+									"variable": [
+										{
+											"key": "reviewId",
+											"value": "{{reviewId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Обновление отзыва с content == 10000 знаков",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        let review = await api.addReview(rnd.getReview());\r",
+											"        let updatedReview = rnd.getReview();\r",
+											"\r",
+											"        updatedReview.content = rnd.getWord(10000);\r",
+											"\r",
+											"        updatedReview.authorId = review.authorId;\r",
+											"        updatedReview.eventId = review.eventId;\r",
+											"        updatedReview.createdOn = review.createdOn;\r",
+											"        updatedReview.mark = review.mark;\r",
+											"        pm.collectionVariables.set('response', updatedReview);\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        pm.request.body.update({\r",
+											"            mode: 'raw',\r",
+											"            raw: updatedReview,\r",
+											"            options: { raw: { language: 'json' } }\r",
+											"        });\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.ok;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const reviewId = pm.collectionVariables.get('reviewId');\r",
+											"const source = pm.collectionVariables.get('response');\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+											"pm.expect(target).to.have.property('id');\r",
+											"pm.expect(target).to.have.property('authorId');\r",
+											"pm.expect(target).to.have.property('eventId');\r",
+											"pm.expect(target).to.have.property('username');\r",
+											"pm.expect(target).to.have.property('title');\r",
+											"pm.expect(target).to.have.property('content');\r",
+											"pm.expect(target).to.have.property('createdOn');\r",
+											"pm.expect(target).to.have.property('updatedOn');\r",
+											"pm.expect(target).to.have.property('mark');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+											"    pm.expect(reviewId).equals(target.id, 'Id отзыва должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(target.updatedOn).to.not.be.null;\r",
+											"    pm.expect(Date.parse(target.updatedOn)).to.be.above(Date.parse(target.createdOn));\r",
+											"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должно соответствовать изменяемому отзыву');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{authorId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews/:reviewId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										":reviewId"
+									],
+									"variable": [
+										{
+											"key": "reviewId",
+											"value": "{{reviewId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Обновление отзыва с content < 3 знаков",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        let review = await api.addReview(rnd.getReview());\r",
+											"        let updatedReview = rnd.getReview();\r",
+											"\r",
+											"        updatedReview.content = rnd.getWord(2);\r",
+											"\r",
+											"        updatedReview.authorId = review.authorId;\r",
+											"        updatedReview.eventId = review.eventId;\r",
+											"        updatedReview.createdOn = review.createdOn;\r",
+											"        updatedReview.mark = review.mark;\r",
+											"        pm.collectionVariables.set('response', updatedReview);\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        pm.request.body.update({\r",
+											"            mode: 'raw',\r",
+											"            raw: updatedReview,\r",
+											"            options: { raw: { language: 'json' } }\r",
+											"        });\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{authorId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews/:reviewId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										":reviewId"
+									],
+									"variable": [
+										{
+											"key": "reviewId",
+											"value": "{{reviewId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Обновление отзыва с content == 3 знака",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        let review = await api.addReview(rnd.getReview());\r",
+											"        let updatedReview = rnd.getReview();\r",
+											"\r",
+											"        updatedReview.content = rnd.getWord(3);\r",
+											"\r",
+											"        updatedReview.authorId = review.authorId;\r",
+											"        updatedReview.eventId = review.eventId;\r",
+											"        updatedReview.createdOn = review.createdOn;\r",
+											"        updatedReview.mark = review.mark;\r",
+											"        pm.collectionVariables.set('response', updatedReview);\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        pm.request.body.update({\r",
+											"            mode: 'raw',\r",
+											"            raw: updatedReview,\r",
+											"            options: { raw: { language: 'json' } }\r",
+											"        });\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.ok;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const reviewId = pm.collectionVariables.get('reviewId');\r",
+											"const source = pm.collectionVariables.get('response');\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+											"pm.expect(target).to.have.property('id');\r",
+											"pm.expect(target).to.have.property('authorId');\r",
+											"pm.expect(target).to.have.property('eventId');\r",
+											"pm.expect(target).to.have.property('username');\r",
+											"pm.expect(target).to.have.property('title');\r",
+											"pm.expect(target).to.have.property('content');\r",
+											"pm.expect(target).to.have.property('createdOn');\r",
+											"pm.expect(target).to.have.property('updatedOn');\r",
+											"pm.expect(target).to.have.property('mark');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+											"    pm.expect(reviewId).equals(target.id, 'Id отзыва должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(target.updatedOn).to.not.be.null;\r",
+											"    pm.expect(Date.parse(target.updatedOn)).to.be.above(Date.parse(target.createdOn));\r",
+											"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должно соответствовать изменяемому отзыву');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{authorId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews/:reviewId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										":reviewId"
+									],
+									"variable": [
+										{
+											"key": "reviewId",
+											"value": "{{reviewId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Обновление отзыва с content == null",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        let review = await api.addReview(rnd.getReview());\r",
+											"        let updatedReview = rnd.getReview();\r",
+											"\r",
+											"        updatedReview.content = null;\r",
+											"\r",
+											"        updatedReview.authorId = review.authorId;\r",
+											"        updatedReview.eventId = review.eventId;\r",
+											"        updatedReview.createdOn = review.createdOn;\r",
+											"        updatedReview.mark = review.mark;\r",
+											"        pm.collectionVariables.set('savedReview', review);\r",
+											"        pm.collectionVariables.set('response', updatedReview);\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        pm.request.body.update({\r",
+											"            mode: 'raw',\r",
+											"            raw: updatedReview,\r",
+											"            options: { raw: { language: 'json' } }\r",
+											"        });\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.ok;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const savedReview = pm.collectionVariables.get('savedReview');\r",
+											"const reviewId = pm.collectionVariables.get('reviewId');\r",
+											"const source = pm.collectionVariables.get('response');\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+											"pm.expect(target).to.have.property('id');\r",
+											"pm.expect(target).to.have.property('authorId');\r",
+											"pm.expect(target).to.have.property('eventId');\r",
+											"pm.expect(target).to.have.property('username');\r",
+											"pm.expect(target).to.have.property('title');\r",
+											"pm.expect(target).to.have.property('content');\r",
+											"pm.expect(target).to.have.property('createdOn');\r",
+											"pm.expect(target).to.have.property('updatedOn');\r",
+											"pm.expect(target).to.have.property('mark');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+											"    pm.expect(reviewId).equals(target.id, 'Id отзыва должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(target.updatedOn).to.not.be.null;\r",
+											"    pm.expect(Date.parse(target.updatedOn)).to.be.above(Date.parse(target.createdOn));\r",
+											"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать изменяемому отзыву');\r",
+											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+											"    pm.expect(savedReview.content).equal(target.content, 'Содержание отзыва должно соответствовать сохранённому ранее');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должно соответствовать изменяемому отзыву');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{authorId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{request_body}}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/reviews/:reviewId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										":reviewId"
+									],
+									"variable": [
+										{
+											"key": "reviewId",
+											"value": "{{reviewId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Добавление отзыва без authorId",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    let review;\r",
+									"    try {\r",
+									"        review = rnd.getReview();\r",
+									"        review.authorId = null;\r",
+									"        console.log(\"review.authorId = \" + review.authorId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"\r",
+									"    pm.request.body.update({\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(review),\r",
+									"        options: { raw: { language: 'json' } }\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление отзыва с authorId меньше либо равным 0",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    let review;\r",
+									"    try {\r",
+									"        review = rnd.getReview();\r",
+									"        review.authorId = 0;\r",
+									"        console.log(\"review.authorId = \" + review.authorId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"\r",
+									"    pm.request.body.update({\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(review),\r",
+									"        options: { raw: { language: 'json' } }\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление отзыва с eventId меньше либо равным 0",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    let review;\r",
+									"    try {\r",
+									"        review = rnd.getReview();\r",
+									"        review.eventId = 0;\r",
+									"        console.log(\"review.authorId = \" + review.authorId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"\r",
+									"    pm.request.body.update({\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(review),\r",
+									"        options: { raw: { language: 'json' } }\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление отзыва с null username",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    let review;\r",
+									"    try {\r",
+									"        review = rnd.getReview();\r",
+									"        review.username = null;\r",
+									"        console.log(\"review.authorId = \" + review.authorId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"\r",
+									"    pm.request.body.update({\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(review),\r",
+									"        options: { raw: { language: 'json' } }\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление отзыва с пустым username",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    let review;\r",
+									"    try {\r",
+									"        review = rnd.getReview();\r",
+									"        review.username = ' ';\r",
+									"        console.log(\"review.authorId = \" + review.authorId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"\r",
+									"    pm.request.body.update({\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(review),\r",
+									"        options: { raw: { language: 'json' } }\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавление отзыва без eventId",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    let review;\r",
+									"    try {\r",
+									"        review = rnd.getReview();\r",
+									"        review.eventId = null;\r",
+									"        console.log(\"review.authorId = \" + review.authorId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"\r",
+									"    pm.request.body.update({\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(review),\r",
+									"        options: { raw: { language: 'json' } }\r",
+									"    });\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обновление отзыва с изменёнными authorId и eventId в DTO",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        let review = await api.addReview(rnd.getReview());\r",
+									"        let updatedReview = rnd.getReview();\r",
+									"        updatedReview.authorId = _.random(1001, 2000);\r",
+									"        updatedReview.eventId = _.random(1001, 2000);\r",
+									"        updatedReview.createdOn = review.createdOn;\r",
+									"        updatedReview.mark = review.mark;\r",
+									"        pm.collectionVariables.set('savedReview', review);\r",
+									"        pm.collectionVariables.set('response', updatedReview);\r",
+									"        pm.collectionVariables.set('authorId', review.authorId);\r",
+									"        pm.collectionVariables.set('reviewId', review.id);\r",
+									"\r",
+									"        pm.request.body.update({\r",
+									"            mode: 'raw',\r",
+									"            raw: updatedReview,\r",
+									"            options: { raw: { language: 'json' } }\r",
+									"        });\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const savedReview = pm.collectionVariables.get('savedReview');\r",
+									"const reviewId = pm.collectionVariables.get('reviewId');\r",
+									"const source = pm.collectionVariables.get('response');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+									"pm.expect(target).to.have.property('id');\r",
+									"pm.expect(target).to.have.property('authorId');\r",
+									"pm.expect(target).to.have.property('eventId');\r",
+									"pm.expect(target).to.have.property('username');\r",
+									"pm.expect(target).to.have.property('title');\r",
+									"pm.expect(target).to.have.property('content');\r",
+									"pm.expect(target).to.have.property('createdOn');\r",
+									"pm.expect(target).to.have.property('updatedOn');\r",
+									"pm.expect(target).to.have.property('mark');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+									"    pm.expect(reviewId).equals(target.id, 'Id отзыва должно соответствовать изменяемому отзыву');\r",
+									"    pm.expect(target.updatedOn).to.not.be.null;\r",
+									"    pm.expect(Date.parse(target.updatedOn)).to.be.above(Date.parse(target.createdOn));\r",
+									"    pm.expect(savedReview.authorId).equal(target.authorId, 'Id автора должно соответствовать сохраненному ранее');\r",
+									"    pm.expect(savedReview.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать сохраненному ранее');\r",
+									"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+									"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+									"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+									"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должно соответствовать изменяемому отзыву');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Review-User-Id",
+								"value": "{{authorId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews/:reviewId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								":reviewId"
+							],
+							"variable": [
+								{
+									"key": "reviewId",
+									"value": "{{reviewId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Обновление отзыва с несуществующими reviewId, authorId",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        let review = await api.addReview(rnd.getReview());\r",
+									"        let updatedReview = rnd.getReview();\r",
+									"        updatedReview.authorId = review.authorId;\r",
+									"        updatedReview.eventId = review.eventId;\r",
+									"        updatedReview.createdOn = review.createdOn;\r",
+									"        updatedReview.mark = review.mark;\r",
+									"        pm.collectionVariables.set('authorId', 999999);\r",
+									"        pm.collectionVariables.set('reviewId', 999999);\r",
+									"\r",
+									"        pm.request.body.update({\r",
+									"            mode: 'raw',\r",
+									"            raw: updatedReview,\r",
+									"            options: { raw: { language: 'json' } }\r",
+									"        });\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 404 и данные в формате json\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Review-User-Id",
+								"value": "{{authorId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reviews/:reviewId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								":reviewId"
+							],
+							"variable": [
+								{
+									"key": "reviewId",
+									"value": "{{reviewId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получение несуществующего отзыва по id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        pm.collectionVariables.set('reviewId', 99999999);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 404 и данные в формате json\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/:reviewId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								":reviewId"
+							],
+							"variable": [
+								{
+									"key": "reviewId",
+									"value": "{{reviewId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удалить отзыв по неправильному id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        pm.collectionVariables.set('reviewId', 9999999);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 404 и данные в формате json\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Review-User-Id",
+								"value": "{{authorId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/:reviewId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								":reviewId"
+							],
+							"variable": [
+								{
+									"key": "reviewId",
+									"value": "{{reviewId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удалить отзыв по id не автором",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const review = await api.addReview(rnd.getReview());\r",
+									"        const foundedReview = await api.findReview(review.id);\r",
+									"        pm.collectionVariables.set('response', foundedReview);\r",
+									"        pm.collectionVariables.set('authorId', 999999999);\r",
+									"        pm.collectionVariables.set('reviewId', review.id);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 403 и данные в формате json\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"let source = pm.collectionVariables.get('response');\r",
+									"\r",
+									"pm.test(\"Подборка должна быть найдена до удаления\", function () {\r",
+									"    pm.expect(source).not.to.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Review-User-Id",
+								"value": "{{authorId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/:reviewId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								":reviewId"
+							],
+							"variable": [
+								{
+									"key": "reviewId",
+									"value": "{{reviewId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Добавление нового отзыва",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const main = async () => {\r",
+							"    const api = new API(pm);\r",
+							"    const rnd = new RandomUtils();\r",
+							"\r",
+							"    let review;\r",
+							"    try {\r",
+							"        review = rnd.getReview();\r",
+							"    } catch(err) {\r",
+							"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+							"    }\r",
+							"\r",
+							"    pm.request.body.update({\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify(review),\r",
+							"        options: { raw: { language: 'json' } }\r",
+							"    });\r",
+							"};\r",
+							"\r",
+							"const interval = setInterval(() => {}, 1000);\r",
+							"\r",
+							"setTimeout(async () => \r",
+							"    {\r",
+							"        try {\r",
+							"            await main();\r",
+							"        } catch (e) {\r",
+							"            console.error(e);\r",
+							"        } finally {\r",
+							"            clearInterval(interval);\r",
+							"        }\r",
+							"    },  \r",
+							"    100 \r",
+							");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"const source = JSON.parse(pm.request.body.raw);\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+							"pm.expect(target).to.have.property('id');\r",
+							"pm.expect(target).to.have.property('authorId');\r",
+							"pm.expect(target).to.have.property('eventId');\r",
+							"pm.expect(target).to.have.property('username');\r",
+							"pm.expect(target).to.have.property('title');\r",
+							"pm.expect(target).to.have.property('content');\r",
+							"pm.expect(target).to.have.property('createdOn');\r",
+							"pm.expect(target).to.have.property('updatedOn');\r",
+							"pm.expect(target).to.have.property('mark');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+							"    pm.expect(target.id).to.not.be.null;\r",
+							"    pm.expect(target.updatedOn).to.be.null;\r",
+							"    pm.expect(target.createdOn).to.not.be.null;\r",
+							"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать отправленному в запросе');\r",
+							"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать отправленному в запросе');\r",
+							"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+							"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+							"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+							"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{request_body}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/reviews",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"reviews"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Обновление отзыва",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const main = async () => {\r",
+							"    const api = new API(pm);\r",
+							"    const rnd = new RandomUtils();\r",
+							"\r",
+							"    try {\r",
+							"        let review = await api.addReview(rnd.getReview());\r",
+							"        let updatedReview = rnd.getReview();\r",
+							"        updatedReview.authorId = review.authorId;\r",
+							"        updatedReview.eventId = review.eventId;\r",
+							"        updatedReview.createdOn = review.createdOn;\r",
+							"        updatedReview.mark = review.mark;\r",
+							"        pm.collectionVariables.set('response', updatedReview);\r",
+							"        pm.collectionVariables.set('authorId', review.authorId);\r",
+							"        pm.collectionVariables.set('reviewId', review.id);\r",
+							"\r",
+							"        pm.request.body.update({\r",
+							"            mode: 'raw',\r",
+							"            raw: updatedReview,\r",
+							"            options: { raw: { language: 'json' } }\r",
+							"        });\r",
+							"    } catch(err) {\r",
+							"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"const interval = setInterval(() => {}, 1000);\r",
+							"\r",
+							"setTimeout(async () => \r",
+							"    {\r",
+							"        try {\r",
+							"            // выполняем наш скрипт\r",
+							"            await main();\r",
+							"        } catch (e) {\r",
+							"            console.error(e);\r",
+							"        } finally {\r",
+							"            clearInterval(interval);\r",
+							"        }\r",
+							"    },  \r",
+							"    100 \r",
+							");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.ok;    \r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"const reviewId = pm.collectionVariables.get('reviewId');\r",
+							"const source = pm.collectionVariables.get('response');\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Отзыв должен содержать поля: id, authorId, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+							"pm.expect(target).to.have.property('id');\r",
+							"pm.expect(target).to.have.property('authorId');\r",
+							"pm.expect(target).to.have.property('eventId');\r",
+							"pm.expect(target).to.have.property('username');\r",
+							"pm.expect(target).to.have.property('title');\r",
+							"pm.expect(target).to.have.property('content');\r",
+							"pm.expect(target).to.have.property('createdOn');\r",
+							"pm.expect(target).to.have.property('updatedOn');\r",
+							"pm.expect(target).to.have.property('mark');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+							"    pm.expect(reviewId).equals(target.id, 'Id отзыва должно соответствовать изменяемому отзыву');\r",
+							"    pm.expect(target.updatedOn).to.not.be.null;\r",
+							"    pm.expect(Date.parse(target.updatedOn)).to.be.above(Date.parse(target.createdOn));\r",
+							"    pm.expect(source.authorId).equal(target.authorId, 'Id автора должно соответствовать изменяемому отзыву');\r",
+							"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать изменяемому отзыву');\r",
+							"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
+							"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
+							"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
+							"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должно соответствовать изменяемому отзыву');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Review-User-Id",
+						"value": "{{authorId}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{request_body}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/reviews/:reviewId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"reviews",
+						":reviewId"
+					],
+					"variable": [
+						{
+							"key": "reviewId",
+							"value": "{{reviewId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение отзыва по id",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const main = async () => {\r",
+							"    const api = new API(pm);\r",
+							"    const rnd = new RandomUtils();\r",
+							"\r",
+							"    try {\r",
+							"        let review = await api.addReview(rnd.getReview());\r",
+							"        pm.collectionVariables.set('response', review);\r",
+							"        pm.collectionVariables.set('reviewId', review.id);\r",
+							"    } catch(err) {\r",
+							"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"const interval = setInterval(() => {}, 1000);\r",
+							"\r",
+							"setTimeout(async () => \r",
+							"    {\r",
+							"        try {\r",
+							"            // выполняем наш скрипт\r",
+							"            await main();\r",
+							"        } catch (e) {\r",
+							"            console.error(e);\r",
+							"        } finally {\r",
+							"            clearInterval(interval);\r",
+							"        }\r",
+							"    },  \r",
+							"    100 \r",
+							");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.ok;    \r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"const source = pm.collectionVariables.get('response');\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Отзыв должен содержать поля: id, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+							"pm.expect(target).to.have.property('id');\r",
+							"pm.expect(target).to.have.property('eventId');\r",
+							"pm.expect(target).to.have.property('username');\r",
+							"pm.expect(target).to.have.property('title');\r",
+							"pm.expect(target).to.have.property('content');\r",
+							"pm.expect(target).to.have.property('createdOn');\r",
+							"pm.expect(target).to.have.property('updatedOn');\r",
+							"pm.expect(target).to.have.property('mark');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {\r",
+							"    pm.expect(source.id).equals(target.id, 'Id отзыва должно соответствовать отправленному в запросе');\r",
+							"    pm.expect(source.eventId).equal(target.eventId, 'Id мероприятия должно соответствовать искомому отзыву');\r",
+							"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать искомому отзыву');\r",
+							"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать искомому отзыву');\r",
+							"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать искомому отзыву');\r",
+							"    pm.expect(Date.parse(source.createdOn)).equal(Date.parse(target.createdOn), 'Время создания отзыва должно соответствовать искомому отзыву');\r",
+							"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должно соответствовать искомому отзыву');\r",
+							"    pm.expect(target.updatedOn).to.be.null;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/reviews/:reviewId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"reviews",
+						":reviewId"
+					],
+					"variable": [
+						{
+							"key": "reviewId",
+							"value": "{{reviewId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить отзывы по событию",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const main = async () => {\r",
+							"    const api = new API(pm);\r",
+							"    const rnd = new RandomUtils();\r",
+							"\r",
+							"    try {\r",
+							"        const eventId = _.random(1001, 10000);\r",
+							"        let review = rnd.getReview();\r",
+							"        let review1 = rnd.getReview();\r",
+							"        let review2 = rnd.getReview();\r",
+							"        review.eventId = eventId;\r",
+							"        review1.eventId = eventId;\r",
+							"        review2.eventId = eventId;\r",
+							"        review = await api.addReview(review);\r",
+							"        review1 = await api.addReview(review1);\r",
+							"        review2 = await api.addReview(review2);\r",
+							"        pm.collectionVariables.set('reviewCount', 3);\r",
+							"        pm.collectionVariables.set('eventId', eventId);\r",
+							"    } catch(err) {\r",
+							"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"const interval = setInterval(() => {}, 1000);\r",
+							"\r",
+							"setTimeout(async () => \r",
+							"    {\r",
+							"        try {\r",
+							"            // выполняем наш скрипт\r",
+							"            await main();\r",
+							"        } catch (e) {\r",
+							"            console.error(e);\r",
+							"        } finally {\r",
+							"            clearInterval(interval);\r",
+							"        }\r",
+							"    },  \r",
+							"    100 \r",
+							");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.ok;    \r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"const reviewCount = pm.collectionVariables.get('reviewCount');\r",
+							"const eventId = pm.collectionVariables.get('eventId');\r",
+							"const target = pm.response.json();\r",
+							"let reviewWithEventId = 0;\r",
+							"target.forEach(function(element){if (element.eventId == eventId) reviewWithEventId = reviewWithEventId + 1});\r",
+							"\r",
+							"pm.test(\"Отзыв должен содержать поля: id, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+							"pm.expect(target[0]).to.have.property('id');\r",
+							"pm.expect(target[0]).to.have.property('eventId');\r",
+							"pm.expect(target[0]).to.have.property('username');\r",
+							"pm.expect(target[0]).to.have.property('title');\r",
+							"pm.expect(target[0]).to.have.property('content');\r",
+							"pm.expect(target[0]).to.have.property('createdOn');\r",
+							"pm.expect(target[0]).to.have.property('updatedOn');\r",
+							"pm.expect(target[0]).to.have.property('mark');\r",
+							"pm.expect(target[0]).to.not.have.any.keys('authorId');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Количество данных в ответе должно соответствовать количеству сохранённых отзывов по искомому мероприятию\", function () {\r",
+							"    pm.expect(reviewCount).equals(target.length);\r",
+							"    pm.expect(reviewCount).equals(reviewWithEventId);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/reviews?page=0&size=10&eventId={{eventId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"reviews"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0",
+							"description": "номер страницы"
+						},
+						{
+							"key": "size",
+							"value": "10",
+							"description": "количество отзывов в странице"
+						},
+						{
+							"key": "eventId",
+							"value": "{{eventId}}",
+							"description": "id события, отзывы которого получают"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получить отзывы по событию page = 1, size = 2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const main = async () => {\r",
+							"    const api = new API(pm);\r",
+							"    const rnd = new RandomUtils();\r",
+							"\r",
+							"    try {\r",
+							"        const eventId = _.random(1001, 10000);\r",
+							"        let review = rnd.getReview();\r",
+							"        let review1 = rnd.getReview();\r",
+							"        let review2 = rnd.getReview();\r",
+							"        review.eventId = eventId;\r",
+							"        review1.eventId = eventId;\r",
+							"        review2.eventId = eventId;\r",
+							"        review = await api.addReview(review);\r",
+							"        review1 = await api.addReview(review1);\r",
+							"        review2 = await api.addReview(review2);\r",
+							"        pm.collectionVariables.set('reviewCount', 1);\r",
+							"        pm.collectionVariables.set('eventId', eventId);\r",
+							"    } catch(err) {\r",
+							"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"const interval = setInterval(() => {}, 1000);\r",
+							"\r",
+							"setTimeout(async () => \r",
+							"    {\r",
+							"        try {\r",
+							"            // выполняем наш скрипт\r",
+							"            await main();\r",
+							"        } catch (e) {\r",
+							"            console.error(e);\r",
+							"        } finally {\r",
+							"            clearInterval(interval);\r",
+							"        }\r",
+							"    },  \r",
+							"    100 \r",
+							");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+							"    pm.response.to.be.ok;    \r",
+							"    pm.response.to.be.withBody;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"const reviewCount = pm.collectionVariables.get('reviewCount');\r",
+							"const eventId = pm.collectionVariables.get('eventId');\r",
+							"const target = pm.response.json();\r",
+							"let reviewWithEventId = 0;\r",
+							"target.forEach(function(element){if (element.eventId == eventId) reviewWithEventId = reviewWithEventId + 1});\r",
+							"\r",
+							"pm.test(\"Отзыв должен содержать поля: id, eventId, username, title, content, createdOn, updatedOn, mark\", function () {\r",
+							"pm.expect(target[0]).to.have.property('id');\r",
+							"pm.expect(target[0]).to.have.property('eventId');\r",
+							"pm.expect(target[0]).to.have.property('username');\r",
+							"pm.expect(target[0]).to.have.property('title');\r",
+							"pm.expect(target[0]).to.have.property('content');\r",
+							"pm.expect(target[0]).to.have.property('createdOn');\r",
+							"pm.expect(target[0]).to.have.property('updatedOn');\r",
+							"pm.expect(target[0]).to.have.property('mark');\r",
+							"pm.expect(target[0]).to.not.have.any.keys('authorId');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Количество данных в ответе должно соответствовать количеству сохранённых отзывов по искомому мероприятию\", function () {\r",
+							"    pm.expect(reviewCount).equals(target.length);\r",
+							"    pm.expect(reviewCount).equals(reviewWithEventId);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/reviews?page=1&size=2&eventId={{eventId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"reviews"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1",
+							"description": "номер страницы"
+						},
+						{
+							"key": "size",
+							"value": "2",
+							"description": "количество отзывов в странице"
+						},
+						{
+							"key": "eventId",
+							"value": "{{eventId}}",
+							"description": "id события, отзывы которого получают"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удалить отзыв по id",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const main = async () => {\r",
+							"    const api = new API(pm);\r",
+							"    const rnd = new RandomUtils();\r",
+							"\r",
+							"    try {\r",
+							"        const review = await api.addReview(rnd.getReview());\r",
+							"        const foundedReview = await api.findReview(review.id);\r",
+							"        pm.collectionVariables.set('response', foundedReview);\r",
+							"        pm.collectionVariables.set('authorId', review.authorId);\r",
+							"        pm.collectionVariables.set('reviewId', review.id);\r",
+							"    } catch(err) {\r",
+							"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"const interval = setInterval(() => {}, 1000);\r",
+							"\r",
+							"setTimeout(async () => \r",
+							"    {\r",
+							"        try {\r",
+							"            // выполняем наш скрипт\r",
+							"            await main();\r",
+							"        } catch (e) {\r",
+							"            console.error(e);\r",
+							"        } finally {\r",
+							"            clearInterval(interval);\r",
+							"        }\r",
+							"    },  \r",
+							"    100 \r",
+							");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"let source = pm.collectionVariables.get('response');\r",
+							"\r",
+							"pm.test(\"Подборка должна быть найдена до удаления\", function () {\r",
+							"    pm.expect(source).not.to.be.null;\r",
+							"});\r",
+							"\r",
+							"let body\r",
+							"const req = {\r",
+							"                url: \"http://localhost:8090/reviews?from=0&size=1000&eventId=\" + pm.collectionVariables.get(\"eventId\"),\r",
+							"                method: \"GET\",\r",
+							"                body: body == null ? \"\" : JSON.stringify(body),\r",
+							"                header: { \"Content-Type\": \"application/json\" },\r",
+							"            };\r",
+							"pm.sendRequest(req, (error, response) => {\r",
+							"    pm.test(\"Подборка должна быть удалена после выполнения запроса\", function(){\r",
+							"        response.json().forEach(element => {\r",
+							"            if(element.id == pm.collectionVariables.get('reviewId')){\r",
+							"                throw new Error(\"Подборка все еще находится в списке существующих\");\r",
+							"            }\r",
+							"        })\r",
+							"    });\r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Review-User-Id",
+						"value": "{{authorId}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/reviews/:reviewId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"reviews",
+						":reviewId"
+					],
+					"variable": [
+						{
+							"key": "reviewId",
+							"value": "{{reviewId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"API = class {\r",
+					"    constructor(postman, verbose = false, baseUrl = \"http://localhost:8090\") {\r",
+					"        this.baseUrl = baseUrl;\r",
+					"        this.pm = postman;\r",
+					"        this._verbose = verbose;\r",
+					"    }\r",
+					"\r",
+					"    async addReview(review, verbose=null) {\r",
+					"        return this.post(\"/reviews\", review, \"Ошибка при добавлении нового отзыва: \", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async findReview(reviewId, verbose=null) {\r",
+					"        return this.get('/reviews/' + reviewId, null, \"Ошибка при поиске отзыва по id\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async post(path, body, errorText = \"Ошибка при выполнении post-запроса: \", verbose=null) {\r",
+					"        return this.sendRequest(\"POST\", path, body, errorText, verbose);\r",
+					"    }\r",
+					"\r",
+					"    async get(path, body = null, errorText = \"Ошибка при выполнении get-запроса: \", verbose=null) {\r",
+					"        return this.sendRequest(\"GET\", path, body, errorText, verbose);\r",
+					"    }\r",
+					"\r",
+					"    async sendRequest(method, path, body=null, errorText = \"Ошибка при выполнении запроса: \", verbose=null) {\r",
+					"        return new Promise((resolve, reject) => {\r",
+					"            verbose = verbose == null ? this._verbose : verbose;\r",
+					"            const request = {\r",
+					"                url: this.baseUrl + path,\r",
+					"                method: method,\r",
+					"                body: body == null ? \"\" : JSON.stringify(body),\r",
+					"                header: { \"Content-Type\": \"application/json\" },\r",
+					"            };\r",
+					"            if(verbose) {\r",
+					"                console.log(\"Отправляю запрос: \", request);\r",
+					"            }\r",
+					"\r",
+					"            try {\r",
+					"                this.pm.sendRequest(request, (error, response) => {\r",
+					"                    if(error || (response.code >= 400 && response.code <= 599)) {\r",
+					"                        let err = error ? error : JSON.stringify(response.json());\r",
+					"                        console.error(\"При выполнении запроса к серверу возникла ошика.\\n\", err,\r",
+					"                             \"\\nДля отладки проблемы повторите такой же запрос к вашей программе \" + \r",
+					"                             \"на локальном компьютере. Данные запроса:\\n\", JSON.stringify(request));\r",
+					"\r",
+					"                        reject(new Error(errorText + err));\r",
+					"                    }\r",
+					"                    if(verbose) {\r",
+					"                        console.log(\"Результат обработки запроса: код состояния - \", response.code, \", тело: \", response.json());\r",
+					"                    }\r",
+					"                    if (response.stream.length === 0){\r",
+					"                        reject(new Error('Отправлено пустое тело ответа'))\r",
+					"                    }else{\r",
+					"                        resolve(response.json());\r",
+					"                    }\r",
+					"                });\r",
+					"                \r",
+					"            } catch(err) {\r",
+					"                if(verbose) {\r",
+					"                    console.error(errorText, err);\r",
+					"                }\r",
+					"                return Promise.reject(err);\r",
+					"            }\r",
+					"        });\r",
+					"    }\r",
+					"};\r",
+					"\r",
+					"RandomUtils = class {\r",
+					"    constructor() {}\r",
+					"\r",
+					"    getReview() {\r",
+					"        return {\r",
+					"            authorId: _.random(1, 1000),\r",
+					"            eventId: _.random(1, 1000),\r",
+					"            username: pm.variables.replaceIn('{{$randomFullName}}'),\r",
+					"            title: pm.variables.replaceIn('{{$randomLoremSentence}}').slice(0, 120),\r",
+					"            content: pm.variables.replaceIn('{{$randomLoremSentence}}').slice(1, 10000),\r",
+					"            createdOn: null,\r",
+					"            updatedOn: null,\r",
+					"            mark: _.random(1, 5)\r",
+					"        };\r",
+					"    }\r",
+					"\r",
+					"    getWord(length = 1) {\r",
+					"        let result = '';\r",
+					"        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';\r",
+					"        const charactersLength = characters.length;\r",
+					"        let counter = 0;\r",
+					"        while (counter < length) {\r",
+					"            result += characters.charAt(Math.floor(Math.random() * charactersLength));\r",
+					"            counter += 1;\r",
+					"        }\r",
+					"        return result;\r",
+					"    }\r",
+					"};"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8090",
+			"type": "string"
+		},
+		{
+			"key": "request_body",
+			"value": ""
+		},
+		{
+			"key": "reviewId",
+			"value": "1",
+			"type": "number"
+		},
+		{
+			"key": "authorId",
+			"value": "1",
+			"type": "number"
+		},
+		{
+			"key": "response",
+			"value": ""
+		},
+		{
+			"key": "eventId",
+			"value": "1",
+			"type": "number"
+		},
+		{
+			"key": "reviewCount",
+			"value": "1",
+			"type": "number"
+		},
+		{
+			"key": "savedReview",
+			"value": ""
+		}
+	]
+}

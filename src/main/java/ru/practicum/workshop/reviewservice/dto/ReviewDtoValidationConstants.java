@@ -22,4 +22,9 @@ public final class ReviewDtoValidationConstants {
     public static final String CONTENT_SIZE_ERROR_MESSAGE = "Review content shouldn't be less then "
             + CONTENT_MIN_SIZE + " and more than "+ CONTENT_MAX_SIZE + " characters";
 
+    public static final String MARK_NOT_NULL_ERROR_MESSAGE = "Review's mark shouldn't be null";
+    public static final int MARK_MIN_VALUE = 1;
+    public static final int MARK_MAX_VALUE = 5;
+    public static final String MARK_MIN_ERROR_MESSAGE = "Review's mark shouldn't be less than " + MARK_MIN_VALUE;
+    public static final String MARK_MAX_ERROR_MESSAGE = "Review's mark shouldn't be more than " + MARK_MAX_VALUE;
 }

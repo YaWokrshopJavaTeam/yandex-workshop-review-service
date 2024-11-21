@@ -45,6 +45,7 @@ public class ReviewServiceImpl implements ReviewService {
         }
         if (fromUpdateReview.getTitle() != null) toUpdateReview.setTitle(fromUpdateReview.getTitle());
         if (fromUpdateReview.getContent() != null) toUpdateReview.setContent(fromUpdateReview.getContent());
+        if (fromUpdateReview.getMark() != null) toUpdateReview.setMark(fromUpdateReview.getMark());
         toUpdateReview.setUpdatedOn(fromUpdateReview.getUpdatedOn());
     }
 

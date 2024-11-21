@@ -40,7 +40,7 @@ public class ReviewServiceImplTest {
                 .title("title")
                 .content("content")
                 .createdOn(LocalDateTime.now())
-                .mark(0L)
+                .mark(1)
                 .build());
     }
 
@@ -53,7 +53,7 @@ public class ReviewServiceImplTest {
                 .title("title")
                 .content("content")
                 .createdOn(LocalDateTime.now())
-                .mark(0L)
+                .mark(1)
                 .build());
 
         assertNotNull(review);
@@ -69,6 +69,7 @@ public class ReviewServiceImplTest {
                 .author(authorWithOtherName)
                 .title("other title")
                 .content("other content")
+                .mark(4)
                 .updatedOn(LocalDateTime.now())
                 .build();
         Review expectedReview = review.toBuilder()
@@ -140,6 +141,24 @@ public class ReviewServiceImplTest {
         assertEquals(expectedReview, savedReview);
     }
 
+    @DisplayName("Обновить только оценку отзыва")
+    @Test
+    void updateOnlyReviewMark() {
+        Review updatedReview = Review.builder()
+                .id(review.getId())
+                .author(review.getAuthor())
+                .mark(5)
+                .updatedOn(LocalDateTime.now())
+                .build();
+        Review expectedReview = review.toBuilder()
+                .mark(updatedReview.getMark())
+                .updatedOn(updatedReview.getUpdatedOn())
+                .build();
+        Review savedReview = reviewService.updateReview(updatedReview);
+        assertNotNull(savedReview);
+        assertEquals(expectedReview, savedReview);
+    }
+
     @DisplayName("Ошибка Not Found при обновлении отзыва")
     @Test
     void shouldThrowNotFoundWhenUpdate() {
@@ -191,7 +210,7 @@ public class ReviewServiceImplTest {
                 .title("title")
                 .content("content")
                 .createdOn(LocalDateTime.now())
-                .mark(0L)
+                .mark(1)
                 .build());
     }
 
