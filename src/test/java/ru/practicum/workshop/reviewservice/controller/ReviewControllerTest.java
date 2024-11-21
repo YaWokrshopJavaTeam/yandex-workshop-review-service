@@ -52,7 +52,7 @@ class ReviewControllerTest {
     private Long id = 0L;
 
     private ReviewCreateDto createCreationDto() {
-        return new ReviewCreateDto(++id, id, "user", "title", "content");
+        return new ReviewCreateDto(++id, id, "user", "title", "content", 1);
     }
 
     private ReviewDtoWithAuthor createDtoWithAuthor(Review review) {
@@ -75,7 +75,7 @@ class ReviewControllerTest {
                 .title(createDto.getTitle())
                 .content(createDto.getContent())
                 .createdOn(LocalDateTime.now())
-                .mark(0L)
+                .mark(1)
                 .build();
     }
 
@@ -122,7 +122,7 @@ class ReviewControllerTest {
     @DisplayName("Валидация ReviewCreateDto null authorId")
     @Test
     void shouldThrowBadRequestWhenCreateReviewNullAuthorId() throws Exception {
-        createDto = new ReviewCreateDto(null, ++id, "user", "title", "content");
+        createDto = new ReviewCreateDto(null, ++id, "user", "title", "content", 1);
 
         response = createReviewResponse(createDto);
 
@@ -137,7 +137,7 @@ class ReviewControllerTest {
     @DisplayName("Валидация ReviewCreateDto authorId @Positive")
     @Test
     void shouldThrowBadRequestWhenCreateReviewIncorrectAuthorId() throws Exception {
-        createDto = new ReviewCreateDto(0L, ++id, "user", "title", "content");
+        createDto = new ReviewCreateDto(0L, ++id, "user", "title", "content", 1);
 
         response = createReviewResponse(createDto);
 
@@ -152,7 +152,7 @@ class ReviewControllerTest {
     @DisplayName("Валидация ReviewCreateDto null eventId")
     @Test
     void shouldThrowBadRequestWhenCreateReviewNullEventId() throws Exception {
-        createDto = new ReviewCreateDto(++id, null, "user", "title", "content");
+        createDto = new ReviewCreateDto(++id, null, "user", "title", "content", 1);
 
         response = createReviewResponse(createDto);
 
@@ -167,7 +167,7 @@ class ReviewControllerTest {
     @DisplayName("Валидация ReviewCreateDto eventId @Positive")
     @Test
     void shouldThrowBadRequestWhenCreateReviewIncorrectEventId() throws Exception {
-        createDto = new ReviewCreateDto(++id, 0L, "user", "title", "content");
+        createDto = new ReviewCreateDto(++id, 0L, "user", "title", "content", 1);
 
         response = createReviewResponse(createDto);
 
@@ -182,7 +182,7 @@ class ReviewControllerTest {
     @DisplayName("Валидация ReviewCreateDto username @NotBlank")
     @Test
     void shouldThrowBadRequestWhenCreateReviewBlankUsername() throws Exception {
-        createDto = new ReviewCreateDto(++id, id, " ".repeat(USERNAME_MIN_SIZE + 1), "title", "content");
+        createDto = new ReviewCreateDto(++id, id, " ".repeat(USERNAME_MIN_SIZE + 1), "title", "content", 1);
 
         response = createReviewResponse(createDto);
 
@@ -190,7 +190,7 @@ class ReviewControllerTest {
         assertEquals(400, response.getStatus());
         assertTrue(responseBlankContent.contains(USERNAME_NOT_BLANK_ERROR_MESSAGE));
 
-        ReviewCreateDto nullUsernameDto = new ReviewCreateDto(++id, id, null, "title", "content");
+        ReviewCreateDto nullUsernameDto = new ReviewCreateDto(++id, id, null, "title", "content", 1);
         MockHttpServletResponse nullResponse = createReviewResponse(nullUsernameDto);
         String responseNullContent = nullResponse.getContentAsString();
 
@@ -204,7 +204,8 @@ class ReviewControllerTest {
     @DisplayName("Валидация ReviewCreateDto username @Size")
     @Test
     void shouldThrowBadRequestWhenCreateReviewIncorrectUsername() throws Exception {
-        createDto = new ReviewCreateDto(++id, id, "i".repeat(USERNAME_MIN_SIZE - 1), "title", "content");
+        createDto = new ReviewCreateDto(++id, id, "i".repeat(USERNAME_MIN_SIZE - 1),
+                "title", "content", 1);
 
         response = createReviewResponse(createDto);
 
@@ -212,7 +213,8 @@ class ReviewControllerTest {
         assertEquals(400, response.getStatus());
         assertTrue(responseBlankContent.contains(USERNAME_SIZE_ERROR_MESSAGE));
 
-        ReviewCreateDto maxUsernameDto = new ReviewCreateDto(++id, id, "i".repeat(USERNAME_MAX_SIZE + 1), "title", "content");
+        ReviewCreateDto maxUsernameDto = new ReviewCreateDto(++id, id, "i".repeat(USERNAME_MAX_SIZE + 1),
+                "title", "content", 1);
         MockHttpServletResponse maxResponse = createReviewResponse(maxUsernameDto);
         String responseMaxContent = maxResponse.getContentAsString();
 
@@ -230,7 +232,8 @@ class ReviewControllerTest {
                 id,
                 "user",
                 "i".repeat(TITLE_MAX_SIZE + 1),
-                "content");
+                "content",
+                1);
 
         response = createReviewResponse(createDto);
 
@@ -246,7 +249,7 @@ class ReviewControllerTest {
     @Test
     void shouldThrowBadRequestWhenCreateReviewBlankContent() throws Exception {
         createDto = new ReviewCreateDto(++id, id, "user", "title",
-                " ".repeat(CONTENT_MIN_SIZE + 1));
+                " ".repeat(CONTENT_MIN_SIZE + 1), 1);
 
         response = createReviewResponse(createDto);
 
@@ -255,7 +258,7 @@ class ReviewControllerTest {
         assertTrue(responseBlankContent.contains(CONTENT_NOT_BLANK_ERROR_MESSAGE));
 
         ReviewCreateDto nullContentDto = new ReviewCreateDto(++id,
-                id, "user", "title", null);
+                id, "user", "title", null, 1);
         MockHttpServletResponse nullResponse = createReviewResponse(nullContentDto);
         String responseNullContent = nullResponse.getContentAsString();
 
@@ -269,7 +272,8 @@ class ReviewControllerTest {
     @DisplayName("Валидация ReviewCreateDto content @Size")
     @Test
     void shouldThrowBadRequestWhenCreateReviewIncorrectContent() throws Exception {
-        createDto = new ReviewCreateDto(++id, id, "user", "title", "c".repeat(CONTENT_MIN_SIZE - 1));
+        createDto = new ReviewCreateDto(++id, id, "user", "title",
+                "c".repeat(CONTENT_MIN_SIZE - 1), 1);
 
         response = createReviewResponse(createDto);
 
@@ -278,7 +282,7 @@ class ReviewControllerTest {
         assertTrue(responseMinContent.contains(CONTENT_SIZE_ERROR_MESSAGE));
 
         ReviewCreateDto maxUsernameDto = new ReviewCreateDto(++id, id, "user", "title",
-                "c".repeat(CONTENT_MAX_SIZE + 1));
+                "c".repeat(CONTENT_MAX_SIZE + 1), 1);
         MockHttpServletResponse MaxResponse = createReviewResponse(maxUsernameDto);
         String responseMaxContent = MaxResponse.getContentAsString();
 
@@ -290,7 +294,7 @@ class ReviewControllerTest {
     }
 
     private ReviewUpdateDto createUpdateDto() {
-        return new ReviewUpdateDto("other name", "other title", "other content");
+        return new ReviewUpdateDto("other name", "other title", "other content", 1);
     }
 
     private Review createReviewFromUpdate(ReviewUpdateDto dto, Long reviewId, Long authorId) {
@@ -405,7 +409,8 @@ class ReviewControllerTest {
     @DisplayName("Валидация ReviewUpdateDto - username @Size")
     @Test
     void shouldThrowBadRequestWhenUpdateReviewIncorrectUsername() throws Exception {
-        updateDto = new ReviewUpdateDto("n".repeat(USERNAME_MIN_SIZE - 1), "other title", "content");
+        updateDto = new ReviewUpdateDto("n".repeat(USERNAME_MIN_SIZE - 1), "other title",
+                "content", 1);
         final Long reviewId = ++id;
         final Long authorId = id;
 
@@ -416,7 +421,7 @@ class ReviewControllerTest {
         assertTrue(responseMinContent.contains(USERNAME_SIZE_ERROR_MESSAGE));
 
         ReviewUpdateDto maxUsernameDto = new ReviewUpdateDto("n".repeat(USERNAME_MAX_SIZE + 1),
-                "other title", "content");
+                "other title", "content", 1);
         MockHttpServletResponse MaxResponse = updateReviewResponse(maxUsernameDto, reviewId, authorId);;
         String responseMaxContent = MaxResponse.getContentAsString();
 
@@ -431,7 +436,7 @@ class ReviewControllerTest {
     @Test
     void shouldThrowBadRequestWhenUpdateReviewIncorrectTitle() throws Exception {
         updateDto = new ReviewUpdateDto("other name",
-                "t".repeat(TITLE_MAX_SIZE + 1), "content");
+                "t".repeat(TITLE_MAX_SIZE + 1), "content", 1);
         final Long reviewId = ++id;
         final Long authorId = id;
 
@@ -449,7 +454,7 @@ class ReviewControllerTest {
     @Test
     void shouldThrowBadRequestWhenUpdateReviewIncorrectContent() throws Exception {
         updateDto = new ReviewUpdateDto("other name", "other title",
-                "c".repeat(CONTENT_MIN_SIZE - 1));
+                "c".repeat(CONTENT_MIN_SIZE - 1), 1);
         final Long reviewId = ++id;
         final Long authorId = id;
 
@@ -460,7 +465,7 @@ class ReviewControllerTest {
         assertTrue(responseMinContent.contains(CONTENT_SIZE_ERROR_MESSAGE));
 
         ReviewUpdateDto maxContentDto = new ReviewUpdateDto("other name", "other title",
-                "c".repeat(CONTENT_MAX_SIZE + 1));
+                "c".repeat(CONTENT_MAX_SIZE + 1), 1);
         MockHttpServletResponse MaxResponse = updateReviewResponse(maxContentDto, reviewId, authorId);;
         String responseMaxContent = MaxResponse.getContentAsString();
 

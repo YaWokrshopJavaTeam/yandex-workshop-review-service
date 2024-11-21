@@ -14,5 +14,5 @@ public class ReviewDtoWithAuthor {
     String content;
     LocalDateTime createdOn;
     LocalDateTime updatedOn;
-    Long mark;
+    Integer mark;
 }

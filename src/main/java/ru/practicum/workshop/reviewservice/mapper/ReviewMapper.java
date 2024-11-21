@@ -20,7 +20,7 @@ public interface ReviewMapper {
     @Mapping(source = "dto.username", target = "author.username")
     @Mapping(target = "id", expression = "java(null)")
     @Mapping(target = "updatedOn", expression = "java(null)")
-    @Mapping(target = "mark", constant = "0L")
+    @Mapping(source = "mark",target = "mark")
     @Mapping(target = "createdOn", expression = "java(LocalDateTime.now())")
     Review toEntity(ReviewCreateDto dto);
 

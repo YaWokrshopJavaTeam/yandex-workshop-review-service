@@ -21,4 +21,8 @@ public class ReviewCreateDto {
     @NotBlank(message = CONTENT_NOT_BLANK_ERROR_MESSAGE)
     @Size(min = CONTENT_MIN_SIZE, max = CONTENT_MAX_SIZE, message = CONTENT_SIZE_ERROR_MESSAGE)
     String content;
+    @NotNull(message = MARK_NOT_NULL_ERROR_MESSAGE)
+    @Min(value = MARK_MIN_VALUE, message = MARK_MIN_ERROR_MESSAGE)
+    @Max(value = MARK_MAX_VALUE, message = MARK_MAX_ERROR_MESSAGE)
+    Integer mark;
 }

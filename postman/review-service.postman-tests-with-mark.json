@@ -183,7 +183,7 @@
 											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
-											"    pm.expect(0).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -392,7 +392,7 @@
 											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
-											"    pm.expect(0).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -601,7 +601,7 @@
 											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
-											"    pm.expect(0).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -719,7 +719,7 @@
 											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
-											"    pm.expect(0).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -928,7 +928,7 @@
 											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
-											"    pm.expect(0).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -1137,7 +1137,7 @@
 											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
-											"    pm.expect(0).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -4135,7 +4135,7 @@
 							"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
 							"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
 							"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
-							"    pm.expect(0).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+							"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -4848,7 +4848,7 @@
 					"            content: pm.variables.replaceIn('{{$randomLoremSentence}}').slice(1, 10000),\r",
 					"            createdOn: null,\r",
 					"            updatedOn: null,\r",
-					"            mark: 0\r",
+					"            mark: 1\r",
 					"        };\r",
 					"    }\r",
 					"\r",

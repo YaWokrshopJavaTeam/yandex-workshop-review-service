@@ -13,5 +13,5 @@ public class ReviewDto {
     String content;
     LocalDateTime createdOn;
     LocalDateTime updatedOn;
-    Long mark;
+    Integer mark;
 }

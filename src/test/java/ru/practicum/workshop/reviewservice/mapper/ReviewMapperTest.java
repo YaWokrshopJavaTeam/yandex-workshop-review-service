@@ -38,7 +38,7 @@ public class ReviewMapperTest {
                 .title("title")
                 .content("content")
                 .createdOn(LocalDateTime.now())
-                .mark(0L)
+                .mark(1)
                 .build();
     }
 
@@ -84,7 +84,8 @@ public class ReviewMapperTest {
                 review.getEventId(),
                 author.getUsername(),
                 review.getTitle(),
-                review.getContent());
+                review.getContent(),
+                review.getMark());
 
         Review resultReview = mapper.toEntity(dto);
 
@@ -96,7 +97,7 @@ public class ReviewMapperTest {
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .createdOn(now)
-                .mark(0L)
+                .mark(dto.getMark())
                 .build();
 
         assertNotNull(resultReview);
@@ -109,7 +110,8 @@ public class ReviewMapperTest {
         ReviewUpdateDto dto = new ReviewUpdateDto(
                 "other name",
                 "other title",
-                "other content");
+                "other content",
+                2);
         Long reviewId = review.getId();
         Long authorId = review.getAuthor().getId();
 
@@ -122,6 +124,7 @@ public class ReviewMapperTest {
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .updatedOn(now)
+                .mark(dto.getMark())
                 .build();
 
         assertNotNull(resultReview);

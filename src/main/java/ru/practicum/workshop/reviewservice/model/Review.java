@@ -29,7 +29,7 @@ public class Review {
     private LocalDateTime createdOn;
     @Column(name = "updated_date", nullable = false)
     private LocalDateTime updatedOn;
-    private Long mark; // TODO: возможно, переделать.
+    private Integer mark;
 
     @Override
     public boolean equals(Object o) {
