@@ -27,5 +27,4 @@ public final class ReviewDtoValidationConstants {
     public static final int MARK_MAX_VALUE = 5;
     public static final String MARK_MIN_ERROR_MESSAGE = "Review's mark shouldn't be less than " + MARK_MIN_VALUE;
     public static final String MARK_MAX_ERROR_MESSAGE = "Review's mark shouldn't be more than " + MARK_MAX_VALUE;
-
 }
