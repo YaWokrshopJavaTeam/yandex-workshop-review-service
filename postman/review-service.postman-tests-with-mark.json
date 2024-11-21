@@ -4848,7 +4848,7 @@
 					"            content: pm.variables.replaceIn('{{$randomLoremSentence}}').slice(1, 10000),\r",
 					"            createdOn: null,\r",
 					"            updatedOn: null,\r",
-					"            mark: 1\r",
+					"            mark: _.random(1, 5)\r",
 					"        };\r",
 					"    }\r",
 					"\r",
