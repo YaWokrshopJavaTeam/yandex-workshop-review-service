@@ -6,6 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.workshop.reviewservice.dto.Constants;
+import ru.practicum.workshop.reviewservice.enums.Label;
+import ru.practicum.workshop.reviewservice.exception.ConflictException;
 import ru.practicum.workshop.reviewservice.exception.ForbiddenException;
 import ru.practicum.workshop.reviewservice.storage.*;
 import ru.practicum.workshop.reviewservice.model.*;
@@ -19,6 +22,7 @@ import java.util.List;
 public class ReviewServiceImpl implements ReviewService {
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
+    private final OpinionStorage opinionStorage;
 
     private void saveUser(User user) {
         User newUser = userStorage.save(user);
@@ -100,5 +104,81 @@ public class ReviewServiceImpl implements ReviewService {
             log.info("Review deleted: id={}", reviewId);
             return reviewId;
         }
+    }
+
+    public void addLike(Long reviewId, Long evaluatorId) {
+        addOpinion(reviewId, evaluatorId, Label.LIKE);
+    }
+
+    public void addDislike(Long reviewId, Long evaluatorId) {
+        addOpinion(reviewId, evaluatorId, Label.DISLIKE);
+    }
+
+    public void removeLike(Long reviewId, Long evaluatorId) {
+        removeOpinion(reviewId, evaluatorId, Label.LIKE);
+    }
+
+    public void removeDislike(Long reviewId, Long evaluatorId) {
+        removeOpinion(reviewId, evaluatorId, Label.DISLIKE);
+    }
+
+    private void addOpinion(Long reviewId, Long evaluatorId, Label label) {
+        Review review = getReviewById(reviewId);
+        if (review.getAuthor().getId().equals(evaluatorId)) {
+            log.error("FORBIDDEN. Пользователь с id {} не может поставить {} своему отзыву с id {}.",
+                    evaluatorId, label, reviewId);
+            throw new ForbiddenException(String.format("As author of review, you can't put %s to review with id = %d", label, reviewId));
+        }
+        Opinion opinion = opinionStorage.findOneByReview_IdAndEvaluator_Id(reviewId, evaluatorId);
+        if (opinion != null) {
+            if (opinion.getLabel().equals(label)) {
+                log.error("CONFLICT. Пользователь с id {} уже поставил {} отзыву с id {}, и больше" +
+                                " поставить не может.", evaluatorId, label, reviewId);
+                throw new ConflictException(String.format("You have already put %s review with id = %d and cannot do it again", label, reviewId));
+            } else {
+                if (label.equals(Label.LIKE)) {
+                    review.setDislikes(review.getDislikes() - Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
+                    log.info("Dislike from user with id={} to review with id={} deleted", evaluatorId, reviewId);
+                } else {
+                    review.setLikes(review.getLikes() - Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
+                    log.info("Like from user with id={} to review with id={} deleted", evaluatorId, reviewId);
+                }
+                reviewStorage.save(review);
+                opinionStorage.delete(opinion);
+            }
+        } else {
+            User evaluator = userStorage.getReferenceById(evaluatorId);
+            evaluator.getId();
+            opinion = new Opinion(0L, evaluator, review, label);
+            if (label.equals(Label.LIKE)) {
+                review.setLikes(review.getLikes() + Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
+                log.info("Like from user with id={} to review with id={} added", evaluatorId, reviewId);
+            } else {
+                review.setDislikes(review.getDislikes() + Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
+                log.info("Dislike from user with id={} to review with id={} added", evaluatorId, reviewId);
+            }
+            opinionStorage.save(opinion);
+            reviewStorage.save(review);
+        }
+    }
+
+    private void removeOpinion(Long reviewId, Long evaluatorId, Label label) {
+        Opinion opinion = opinionStorage.findOneByReview_IdAndEvaluator_Id(reviewId, evaluatorId);
+        if (!opinion.getLabel().equals(label)) {
+            log.error("CONFLICT. Пользователь с id {} поставил {} отзыву с id {}, а удалить предлагает {}." +
+                    " Операция не может быть выполнена.", evaluatorId, opinion.getLabel(), reviewId, label);
+            throw new ConflictException(String.format("You have put %s to review with id = %d, but want to delete %s. " +
+                    " The operation cannot be performed.", opinion.getLabel(), reviewId, label));
+        }
+        Review review = getReviewById(reviewId);
+        if (label.equals(Label.LIKE)) {
+            review.setLikes(review.getLikes() - Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
+            log.info("Like from user with id={} to review with id={} deleted", evaluatorId, reviewId);
+        } else {
+            review.setDislikes(review.getDislikes() - Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
+            log.info("Dislike from user with id={} to review with id={} deleted", evaluatorId, reviewId);
+        }
+        reviewStorage.save(review);
+        opinionStorage.delete(opinion);
     }
 }

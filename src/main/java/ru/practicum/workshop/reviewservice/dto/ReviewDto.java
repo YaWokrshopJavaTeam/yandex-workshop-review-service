@@ -14,4 +14,6 @@ public class ReviewDto {
     LocalDateTime createdOn;
     LocalDateTime updatedOn;
     Integer mark;
+    Long likes;
+    Long dislikes;
 }

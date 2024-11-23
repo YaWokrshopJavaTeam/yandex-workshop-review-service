@@ -15,4 +15,6 @@ public class ReviewDtoWithAuthor {
     LocalDateTime createdOn;
     LocalDateTime updatedOn;
     Integer mark;
+    Long likes;
+    Long dislikes;
 }

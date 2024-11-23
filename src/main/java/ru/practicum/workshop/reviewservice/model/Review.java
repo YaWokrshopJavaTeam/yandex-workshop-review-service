@@ -30,6 +30,8 @@ public class Review {
     @Column(name = "updated_date", nullable = false)
     private LocalDateTime updatedOn;
     private Integer mark;
+    private Long likes;
+    private Long dislikes;
 
     @Override
     public boolean equals(Object o) {
@@ -51,9 +53,11 @@ public class Review {
                 ", eventId=" + eventId +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
-                ", createdOn=" + createdOn +
-                ", updatedOn=" + updatedOn +
-                ", mark=" + mark +
+                ", createdOn=" + createdOn + '\'' +
+                ", updatedOn=" + updatedOn + '\'' +
+                ", mark=" + mark + '\'' +
+                ", likes=" + likes + '\'' +
+                ", dislikes=" + dislikes +
                 '}';
     }
 }
