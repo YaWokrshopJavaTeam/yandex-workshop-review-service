@@ -39,6 +39,8 @@ public class ReviewMapperTest {
                 .content("content")
                 .createdOn(LocalDateTime.now())
                 .mark(1)
+                .likes(0L)
+                .dislikes(0L)
                 .build();
     }
 
@@ -53,7 +55,9 @@ public class ReviewMapperTest {
                 review.getContent(),
                 review.getCreatedOn(),
                 review.getUpdatedOn(),
-                review.getMark());
+                review.getMark(),
+                review.getLikes(),
+                review.getDislikes());
         ReviewDtoWithAuthor dto = mapper.toDtoWithAuthor(review);
 
         assertNotNull(dto);
@@ -70,7 +74,9 @@ public class ReviewMapperTest {
                 review.getContent(),
                 review.getCreatedOn(),
                 review.getUpdatedOn(),
-                review.getMark());
+                review.getMark(),
+                review.getLikes(),
+                review.getDislikes());
         ReviewDto dto = mapper.toDtoWithoutAuthor(review);
 
         assertNotNull(dto);

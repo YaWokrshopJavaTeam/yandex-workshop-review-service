@@ -14,6 +14,7 @@ import ru.practicum.workshop.reviewservice.storage.*;
 import ru.practicum.workshop.reviewservice.model.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -30,6 +31,7 @@ public class ReviewServiceImpl implements ReviewService {
         log.info("User added: {}", newUser);
     }
 
+    @Transactional
     @Override
     public Review createReview(Review review) {
         saveUser(review.getAuthor());
@@ -53,6 +55,7 @@ public class ReviewServiceImpl implements ReviewService {
         toUpdateReview.setUpdatedOn(fromUpdateReview.getUpdatedOn());
     }
 
+    @Transactional
     @Override
     public Review updateReview(Review review) {
         Review toUpdateReview = reviewStorage.findByIdAndAuthorId(review.getId(), review.getAuthor().getId())
@@ -74,7 +77,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     @Override
     public Review getReviewById(Long id) {
-        Review review = reviewStorage.findById(id).orElseThrow(() ->{
+        Review review = reviewStorage.findById(id).orElseThrow(() -> {
             log.error("NOT FOUND. Получение отзыва по id. Отзыв с id {} не найден.", id);
             return new EntityNotFoundException(String.format("Review with id = %d was not found", id));
         });
@@ -106,18 +109,26 @@ public class ReviewServiceImpl implements ReviewService {
         }
     }
 
+    @Transactional
+    @Override
     public void addLike(Long reviewId, Long evaluatorId) {
         addOpinion(reviewId, evaluatorId, Label.LIKE);
     }
 
+    @Transactional
+    @Override
     public void addDislike(Long reviewId, Long evaluatorId) {
         addOpinion(reviewId, evaluatorId, Label.DISLIKE);
     }
 
+    @Transactional
+    @Override
     public void removeLike(Long reviewId, Long evaluatorId) {
         removeOpinion(reviewId, evaluatorId, Label.LIKE);
     }
 
+    @Transactional
+    @Override
     public void removeDislike(Long reviewId, Long evaluatorId) {
         removeOpinion(reviewId, evaluatorId, Label.DISLIKE);
     }
@@ -129,7 +140,7 @@ public class ReviewServiceImpl implements ReviewService {
                     evaluatorId, label, reviewId);
             throw new ForbiddenException(String.format("As author of review, you can't put %s to review with id = %d", label, reviewId));
         }
-        Opinion opinion = opinionStorage.findOneByReview_IdAndEvaluator_Id(reviewId, evaluatorId);
+        Opinion opinion = getOpinionByReviewIdAndEvaluatorId(reviewId, evaluatorId);
         if (opinion != null) {
             if (opinion.getLabel().equals(label)) {
                 log.error("CONFLICT. Пользователь с id {} уже поставил {} отзыву с id {}, и больше" +
@@ -147,8 +158,10 @@ public class ReviewServiceImpl implements ReviewService {
                 opinionStorage.delete(opinion);
             }
         } else {
-            User evaluator = userStorage.getReferenceById(evaluatorId);
-            evaluator.getId();
+            User evaluator = userStorage.findById(evaluatorId).orElseThrow(() -> {
+                log.error("NOT FOUND. Пользователь с id {} не найден.", evaluatorId);
+                return new EntityNotFoundException(String.format("User with id = %d was not found", evaluatorId));
+            });
             opinion = new Opinion(0L, evaluator, review, label);
             if (label.equals(Label.LIKE)) {
                 review.setLikes(review.getLikes() + Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
@@ -163,7 +176,11 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private void removeOpinion(Long reviewId, Long evaluatorId, Label label) {
-        Opinion opinion = opinionStorage.findOneByReview_IdAndEvaluator_Id(reviewId, evaluatorId);
+        Opinion opinion = getOpinionByReviewIdAndEvaluatorId(reviewId, evaluatorId);
+        if (opinion == null) {
+            log.error("NOT FOUND. {} на ревью с id={} от пользователя с id={} не найден. Удаление отклонено.", label, reviewId, evaluatorId);
+            throw new EntityNotFoundException(String.format("%s to review with id=%d from user with id=%d was not found", label, reviewId, evaluatorId));
+        }
         if (!opinion.getLabel().equals(label)) {
             log.error("CONFLICT. Пользователь с id {} поставил {} отзыву с id {}, а удалить предлагает {}." +
                     " Операция не может быть выполнена.", evaluatorId, opinion.getLabel(), reviewId, label);
@@ -180,5 +197,9 @@ public class ReviewServiceImpl implements ReviewService {
         }
         reviewStorage.save(review);
         opinionStorage.delete(opinion);
+    }
+
+    private Opinion getOpinionByReviewIdAndEvaluatorId(Long reviewId, Long evaluatorId) {
+        return opinionStorage.findOneByReview_IdAndEvaluator_Id(reviewId, evaluatorId);
     }
 }

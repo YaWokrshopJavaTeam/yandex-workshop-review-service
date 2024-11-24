@@ -75,4 +75,46 @@ public class ReviewController {
                                      Long authorId) {
         return reviewService.deleteReview(id, authorId);
     }
+
+    @PutMapping("/{id}/like")
+    public void addLike(@RequestHeader("X-Review-User-Id")
+                            @Positive(message = "User's id should be positive")
+                            Long evaluatorId,
+                        @PathVariable
+                            @Positive(message = "Review's id should be positive")
+                            Long id) {
+        reviewService.addLike(id, evaluatorId);
+    }
+
+    @PutMapping("/{id}/dislike")
+    public void addDislike(@RequestHeader("X-Review-User-Id")
+                               @Positive(message = "User's id should be positive")
+                               Long evaluatorId,
+                           @PathVariable
+                               @Positive(message = "Review's id should be positive")
+                               Long id) {
+        reviewService.addDislike(id, evaluatorId);
+    }
+
+    @DeleteMapping("/{id}/like")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeLike(@RequestHeader("X-Review-User-Id")
+                               @Positive(message = "User's id should be positive")
+                               Long evaluatorId,
+                           @PathVariable
+                               @Positive(message = "Review's id should be positive")
+                               Long id) {
+        reviewService.removeLike(id, evaluatorId);
+    }
+
+    @DeleteMapping("/{id}/dislike")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeDislike(@RequestHeader("X-Review-User-Id")
+                                  @Positive(message = "User's id should be positive")
+                                  Long evaluatorId,
+                              @PathVariable
+                                  @Positive(message = "Review's id should be positive")
+                                  Long id) {
+        reviewService.removeDislike(id, evaluatorId);
+    }
 }
