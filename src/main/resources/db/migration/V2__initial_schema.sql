@@ -11,5 +11,16 @@ CREATE TABLE IF NOT EXISTS reviews (
     content      VARCHAR(10000) NOT NULL,
     created_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     updated_date TIMESTAMP WITHOUT TIME ZONE,
-    mark         BIGINT NOT NULL
+    mark         BIGINT NOT NULL,
+    likes        BIGINT,
+    dislikes     BIGINT
+);
+
+CREATE TABLE IF NOT EXISTS opinions
+(
+    id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    evaluator_id BIGINT REFERENCES users (id) ON DELETE SET NULL,
+    review_id    BIGINT REFERENCES reviews (id) ON DELETE CASCADE,
+    label        BIGINT NOT NULL,
+    CONSTRAINT uq_evaluator_review UNIQUE (evaluator_id, review_id)
 );

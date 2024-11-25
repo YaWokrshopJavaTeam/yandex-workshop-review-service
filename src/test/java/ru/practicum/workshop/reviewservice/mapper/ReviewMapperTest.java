@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.workshop.reviewservice.dto.ReviewCreateDto;
 import ru.practicum.workshop.reviewservice.dto.ReviewDto;
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles(value = "test")
 @RequiredArgsConstructor(onConstructor_= @Autowired)
 public class ReviewMapperTest {
     private final ReviewMapper mapper;
