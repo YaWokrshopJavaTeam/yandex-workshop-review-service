@@ -30,8 +30,8 @@ public class Review {
     @Column(name = "updated_date", nullable = false)
     private LocalDateTime updatedOn;
     private Integer mark;
-    private Long likes;
-    private Long dislikes;
+    private long likes;
+    private long dislikes;
 
     @Override
     public boolean equals(Object o) {
