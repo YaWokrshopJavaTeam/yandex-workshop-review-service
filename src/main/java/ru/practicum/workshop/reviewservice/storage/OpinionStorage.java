@@ -9,6 +9,6 @@ import java.util.Optional;
 @Repository
 public interface OpinionStorage extends JpaRepository<Opinion, Long> {
 
-    Optional<Opinion> findOneByReview_IdAndEvaluator_Id(long reviewId, long evaluatorId);
+    Optional<Opinion> findOneByReview_IdAndEvaluatorId(long reviewId, long evaluatorId);
 
 }

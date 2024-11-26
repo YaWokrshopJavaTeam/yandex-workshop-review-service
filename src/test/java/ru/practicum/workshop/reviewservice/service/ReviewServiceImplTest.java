@@ -33,12 +33,11 @@ public class ReviewServiceImplTest {
     private static Review review;
     private static User author;
     private static Long userId = 0L;
-    private static User evaluator;
+    private static final Long evaluatorId = 1L;
 
     @BeforeEach
     void beforeEach() {
         author = userStorage.save(new User(userId, "user" + userId++));
-        evaluator = userStorage.save(new User(userId, "evaluator" + userId++));
         review = reviewService.createReview(Review.builder()
                 .author(author)
                 .eventId(0L)
@@ -273,7 +272,7 @@ public class ReviewServiceImplTest {
     @Test
     void putLike() {
         assertEquals(0, review.getLikes());
-        reviewService.addLike(review.getId(), evaluator.getId());
+        reviewService.addLike(review.getId(), evaluatorId);
         assertEquals(1, review.getLikes());
     }
 
@@ -281,9 +280,9 @@ public class ReviewServiceImplTest {
     @Test
     void removeLike() {
         assertEquals(0, review.getLikes());
-        reviewService.addLike(review.getId(), evaluator.getId());
+        reviewService.addLike(review.getId(), evaluatorId);
         assertEquals(1, review.getLikes());
-        reviewService.removeLike(review.getId(), evaluator.getId());
+        reviewService.removeLike(review.getId(), evaluatorId);
         assertEquals(0, review.getLikes());
     }
 
@@ -291,7 +290,7 @@ public class ReviewServiceImplTest {
     @Test
     void putDislike() {
         assertEquals(0, review.getDislikes());
-        reviewService.addDislike(review.getId(), evaluator.getId());
+        reviewService.addDislike(review.getId(), evaluatorId);
         assertEquals(1, review.getDislikes());
     }
 
@@ -299,9 +298,9 @@ public class ReviewServiceImplTest {
     @Test
     void removeDislike() {
         assertEquals(0, review.getDislikes());
-        reviewService.addDislike(review.getId(), evaluator.getId());
+        reviewService.addDislike(review.getId(), evaluatorId);
         assertEquals(1, review.getDislikes());
-        reviewService.removeDislike(review.getId(), evaluator.getId());
+        reviewService.removeDislike(review.getId(), evaluatorId);
         assertEquals(0, review.getDislikes());
     }
 
@@ -309,9 +308,9 @@ public class ReviewServiceImplTest {
     @Test
     void putLikeAndDislike() {
         assertEquals(0, review.getLikes());
-        reviewService.addLike(review.getId(), evaluator.getId());
+        reviewService.addLike(review.getId(), evaluatorId);
         assertEquals(1, review.getLikes());
-        reviewService.addDislike(review.getId(), evaluator.getId());
+        reviewService.addDislike(review.getId(), evaluatorId);
         assertEquals(0, review.getLikes());
         assertEquals(0, review.getDislikes());
     }
@@ -320,9 +319,9 @@ public class ReviewServiceImplTest {
     @Test
     void putDislikeAndLike() {
         assertEquals(0, review.getDislikes());
-        reviewService.addDislike(review.getId(), evaluator.getId());
+        reviewService.addDislike(review.getId(), evaluatorId);
         assertEquals(1, review.getDislikes());
-        reviewService.addLike(review.getId(), evaluator.getId());
+        reviewService.addLike(review.getId(), evaluatorId);
         assertEquals(0, review.getDislikes());
         assertEquals(0, review.getLikes());
     }
@@ -341,9 +340,9 @@ public class ReviewServiceImplTest {
     @DisplayName("Ошибка Conflict при попытке поставить повторный лайк/дизлайк")
     @Test
     void shouldThrowConflictWhenAddSecondLike() {
-        reviewService.addLike(review.getId(), evaluator.getId());
+        reviewService.addLike(review.getId(), evaluatorId);
         final Exception exception = assertThrows(ConflictException.class, () -> {
-            reviewService.addLike(review.getId(), evaluator.getId());
+            reviewService.addLike(review.getId(), evaluatorId);
         });
         final String expectedMessage = String.format(String.format("You have already put %s review with id = %d and cannot do it again", Label.LIKE, review.getId()));
         final String actualMessage = exception.getMessage();
@@ -353,9 +352,9 @@ public class ReviewServiceImplTest {
     @DisplayName("Ошибка Conflict при попытке после постановки лайка/дизлайка удалить дизлайк/лайк")
     @Test
     void shouldThrowConflictWhenAddLikeButRemoveDislike() {
-        reviewService.addLike(review.getId(), evaluator.getId());
+        reviewService.addLike(review.getId(), evaluatorId);
         final Exception exception = assertThrows(ConflictException.class, () -> {
-            reviewService.removeDislike(review.getId(), evaluator.getId());
+            reviewService.removeDislike(review.getId(), evaluatorId);
         });
         final String expectedMessage = String.format(String.format("You have put %s to review with id = %d, but want to delete %s. " +
                 " The operation cannot be performed.", Label.LIKE, review.getId(), Label.DISLIKE));

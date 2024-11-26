@@ -140,7 +140,7 @@ public class ReviewServiceImpl implements ReviewService {
                     evaluatorId, label, reviewId);
             throw new ForbiddenException(String.format("As author of review, you can't put %s to review with id = %d", label, reviewId));
         }
-        Optional<Opinion> resultOfOpinionRequest = opinionStorage.findOneByReview_IdAndEvaluator_Id(reviewId, evaluatorId);
+        Optional<Opinion> resultOfOpinionRequest = opinionStorage.findOneByReview_IdAndEvaluatorId(reviewId, evaluatorId);
         if (resultOfOpinionRequest.isPresent()) {
             Opinion opinion = resultOfOpinionRequest.get();
             if (opinion.getLabel().equals(label)) {
@@ -156,11 +156,7 @@ public class ReviewServiceImpl implements ReviewService {
                 opinionStorage.delete(opinion);
             }
         } else {
-            User evaluator = userStorage.findById(evaluatorId).orElseThrow(() -> {
-                log.error("NOT FOUND. Пользователь с id {} не найден.", evaluatorId);
-                return new EntityNotFoundException(String.format("User with id = %d was not found", evaluatorId));
-            });
-            Opinion opinion = new Opinion(0L, evaluator, review, label);
+            Opinion opinion = new Opinion(0L, evaluatorId, review, label);
             if (label.equals(Label.LIKE)) {
                 likesIncrease(review, evaluatorId);
             } else {
@@ -195,7 +191,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private void removeOpinion(Long reviewId, Long evaluatorId, Label label) {
-        Opinion opinion = opinionStorage.findOneByReview_IdAndEvaluator_Id(reviewId, evaluatorId).orElseThrow(() -> {
+        Opinion opinion = opinionStorage.findOneByReview_IdAndEvaluatorId(reviewId, evaluatorId).orElseThrow(() -> {
             log.error("NOT FOUND. {} на ревью с id={} от пользователя с id={} не найден. Удаление отклонено.", label, reviewId, evaluatorId);
             return new EntityNotFoundException(String.format("%s to review with id=%d from user with id=%d was not found", label, reviewId, evaluatorId));
         });
