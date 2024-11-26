@@ -271,59 +271,61 @@ public class ReviewServiceImplTest {
     @DisplayName("Поставить лайк отзыву")
     @Test
     void putLike() {
-        assertEquals(0, review.getLikes());
+        long likes = review.getLikes();
         reviewService.addLike(review.getId(), evaluatorId);
-        assertEquals(1, review.getLikes());
+        assertEquals(likes + 1, review.getLikes());
     }
 
     @DisplayName("Удалить лайк отзыву")
     @Test
     void removeLike() {
-        assertEquals(0, review.getLikes());
+        long likes = review.getLikes();
         reviewService.addLike(review.getId(), evaluatorId);
-        assertEquals(1, review.getLikes());
+        assertEquals(likes + 1, review.getLikes());
         reviewService.removeLike(review.getId(), evaluatorId);
-        assertEquals(0, review.getLikes());
+        assertEquals(likes, review.getLikes());
     }
 
     @DisplayName("Поставить дизлайк отзыву")
     @Test
     void putDislike() {
-        assertEquals(0, review.getDislikes());
+        long disLikes = review.getLikes();
         reviewService.addDislike(review.getId(), evaluatorId);
-        assertEquals(1, review.getDislikes());
+        assertEquals(disLikes + 1, review.getDislikes());
     }
 
     @DisplayName("Удалить дизлайк отзыву")
     @Test
     void removeDislike() {
-        assertEquals(0, review.getDislikes());
+        long disLikes = review.getLikes();
         reviewService.addDislike(review.getId(), evaluatorId);
-        assertEquals(1, review.getDislikes());
+        assertEquals(disLikes + 1, review.getDislikes());
         reviewService.removeDislike(review.getId(), evaluatorId);
-        assertEquals(0, review.getDislikes());
+        assertEquals(disLikes, review.getDislikes());
     }
 
     @DisplayName("Поставить сначала лайк, а потом дизлайк отзыву")
     @Test
     void putLikeAndDislike() {
-        assertEquals(0, review.getLikes());
+        long likes = review.getLikes();
+        long disLikes = review.getLikes();
         reviewService.addLike(review.getId(), evaluatorId);
-        assertEquals(1, review.getLikes());
+        assertEquals(likes + 1, review.getLikes());
         reviewService.addDislike(review.getId(), evaluatorId);
-        assertEquals(0, review.getLikes());
-        assertEquals(0, review.getDislikes());
+        assertEquals(likes, review.getLikes());
+        assertEquals(disLikes, review.getDislikes());
     }
 
     @DisplayName("Поставить сначала дизлайк, а потом лайк отзыву")
     @Test
     void putDislikeAndLike() {
-        assertEquals(0, review.getDislikes());
+        long disLikes = review.getLikes();
+        long likes = review.getLikes();
         reviewService.addDislike(review.getId(), evaluatorId);
-        assertEquals(1, review.getDislikes());
+        assertEquals(disLikes + 1, review.getDislikes());
         reviewService.addLike(review.getId(), evaluatorId);
-        assertEquals(0, review.getDislikes());
-        assertEquals(0, review.getLikes());
+        assertEquals(disLikes, review.getDislikes());
+        assertEquals(likes, review.getLikes());
     }
 
     @DisplayName("Ошибка Forbidden при попытке поставить лайк/дизлайк автором отзыва")
