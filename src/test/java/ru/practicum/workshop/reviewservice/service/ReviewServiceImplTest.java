@@ -295,7 +295,7 @@ public class ReviewServiceImplTest {
         assertEquals(1, review.getDislikes());
     }
 
-    @DisplayName("Поставить дизлайк отзыву")
+    @DisplayName("Удалить дизлайк отзыву")
     @Test
     void removeDislike() {
         assertEquals(0, review.getDislikes());
@@ -313,6 +313,7 @@ public class ReviewServiceImplTest {
         assertEquals(1, review.getLikes());
         reviewService.addDislike(review.getId(), evaluator.getId());
         assertEquals(0, review.getLikes());
+        assertEquals(0, review.getDislikes());
     }
 
     @DisplayName("Поставить сначала дизлайк, а потом лайк отзыву")
@@ -323,6 +324,7 @@ public class ReviewServiceImplTest {
         assertEquals(1, review.getDislikes());
         reviewService.addLike(review.getId(), evaluator.getId());
         assertEquals(0, review.getDislikes());
+        assertEquals(0, review.getLikes());
     }
 
     @DisplayName("Ошибка Forbidden при попытке поставить лайк/дизлайк автором отзыва")

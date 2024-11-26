@@ -21,11 +21,9 @@ import ru.practicum.workshop.reviewservice.dto.ReviewUpdateDto;
 import ru.practicum.workshop.reviewservice.mapper.ReviewMapper;
 import ru.practicum.workshop.reviewservice.mapper.ReviewMapperImpl;
 import ru.practicum.workshop.reviewservice.model.Review;
-import ru.practicum.workshop.reviewservice.model.User;
 import ru.practicum.workshop.reviewservice.service.ReviewService;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -40,8 +38,6 @@ import static ru.practicum.workshop.reviewservice.dto.ReviewDtoValidationConstan
 @Import(ReviewMapperImpl.class)
 class ReviewControllerTest {
     private final ObjectMapper mapper;
-
-    @Autowired
     private final MockMvc mvc;
 
     @MockBean

@@ -14,6 +14,7 @@ import ru.practicum.workshop.reviewservice.storage.*;
 import ru.practicum.workshop.reviewservice.model.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -58,7 +59,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Review updateReview(Review review) {
         Review toUpdateReview = reviewStorage.findByIdAndAuthorId(review.getId(), review.getAuthor().getId())
-                .orElseThrow(() ->{
+                .orElseThrow(() -> {
                     log.error("NOT FOUND. Обновление отзыва. Отзыв с id {} пользователя с id {} не найден.",
                             review.getId(), review.getAuthor().getId());
                     return new EntityNotFoundException(String.format(
@@ -139,21 +140,19 @@ public class ReviewServiceImpl implements ReviewService {
                     evaluatorId, label, reviewId);
             throw new ForbiddenException(String.format("As author of review, you can't put %s to review with id = %d", label, reviewId));
         }
-        Opinion opinion = getOpinionByReviewIdAndEvaluatorId(reviewId, evaluatorId);
-        if (opinion != null) {
+        Optional<Opinion> resultOfOpinionRequest = opinionStorage.findOneByReview_IdAndEvaluator_Id(reviewId, evaluatorId);
+        if (resultOfOpinionRequest.isPresent()) {
+            Opinion opinion = resultOfOpinionRequest.get();
             if (opinion.getLabel().equals(label)) {
                 log.error("CONFLICT. Пользователь с id {} уже поставил {} отзыву с id {}, и больше" +
                                 " поставить не может.", evaluatorId, label, reviewId);
                 throw new ConflictException(String.format("You have already put %s review with id = %d and cannot do it again", label, reviewId));
             } else {
                 if (label.equals(Label.LIKE)) {
-                    review.setDislikes(review.getDislikes() - Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
-                    log.info("Dislike from user with id={} to review with id={} deleted", evaluatorId, reviewId);
+                    dislikesDecrease(review, evaluatorId);
                 } else {
-                    review.setLikes(review.getLikes() - Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
-                    log.info("Like from user with id={} to review with id={} deleted", evaluatorId, reviewId);
+                    likesDecrease(review, evaluatorId);
                 }
-                reviewStorage.save(review);
                 opinionStorage.delete(opinion);
             }
         } else {
@@ -161,25 +160,45 @@ public class ReviewServiceImpl implements ReviewService {
                 log.error("NOT FOUND. Пользователь с id {} не найден.", evaluatorId);
                 return new EntityNotFoundException(String.format("User with id = %d was not found", evaluatorId));
             });
-            opinion = new Opinion(0L, evaluator, review, label);
+            Opinion opinion = new Opinion(0L, evaluator, review, label);
             if (label.equals(Label.LIKE)) {
-                review.setLikes(review.getLikes() + Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
-                log.info("Like from user with id={} to review with id={} added", evaluatorId, reviewId);
+                likesIncrease(review, evaluatorId);
             } else {
-                review.setDislikes(review.getDislikes() + Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
-                log.info("Dislike from user with id={} to review with id={} added", evaluatorId, reviewId);
+                dislikesIncrease(review, evaluatorId);
             }
             opinionStorage.save(opinion);
-            reviewStorage.save(review);
         }
     }
 
+    private void dislikesDecrease(Review review, Long evaluatorId) {
+        review.setDislikes(review.getDislikes() - Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
+        log.info("Dislike from user with id={} to review with id={} deleted", evaluatorId, review.getId());
+        reviewStorage.save(review);
+    }
+
+    private void dislikesIncrease(Review review, Long evaluatorId) {
+        review.setDislikes(review.getDislikes() + Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
+        log.info("Dislike from user with id={} to review with id={} added", evaluatorId, review.getId());
+        reviewStorage.save(review);
+    }
+
+    private void likesDecrease(Review review, Long evaluatorId) {
+        review.setLikes(review.getLikes() - Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
+        log.info("Like from user with id={} to review with id={} deleted", evaluatorId, review.getId());
+        reviewStorage.save(review);
+    }
+
+    private void likesIncrease(Review review, Long evaluatorId) {
+        review.setLikes(review.getLikes() + Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
+        log.info("Like from user with id={} to review with id={} added", evaluatorId, review.getId());
+        reviewStorage.save(review);
+    }
+
     private void removeOpinion(Long reviewId, Long evaluatorId, Label label) {
-        Opinion opinion = getOpinionByReviewIdAndEvaluatorId(reviewId, evaluatorId);
-        if (opinion == null) {
+        Opinion opinion = opinionStorage.findOneByReview_IdAndEvaluator_Id(reviewId, evaluatorId).orElseThrow(() -> {
             log.error("NOT FOUND. {} на ревью с id={} от пользователя с id={} не найден. Удаление отклонено.", label, reviewId, evaluatorId);
-            throw new EntityNotFoundException(String.format("%s to review with id=%d from user with id=%d was not found", label, reviewId, evaluatorId));
-        }
+            return new EntityNotFoundException(String.format("%s to review with id=%d from user with id=%d was not found", label, reviewId, evaluatorId));
+        });
         if (!opinion.getLabel().equals(label)) {
             log.error("CONFLICT. Пользователь с id {} поставил {} отзыву с id {}, а удалить предлагает {}." +
                     " Операция не может быть выполнена.", evaluatorId, opinion.getLabel(), reviewId, label);
@@ -188,17 +207,10 @@ public class ReviewServiceImpl implements ReviewService {
         }
         Review review = getReviewById(reviewId);
         if (label.equals(Label.LIKE)) {
-            review.setLikes(review.getLikes() - Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
-            log.info("Like from user with id={} to review with id={} deleted", evaluatorId, reviewId);
+            likesDecrease(review, evaluatorId);
         } else {
-            review.setDislikes(review.getDislikes() - Constants.LIKES_DISLIKES_CHANGE_AT_NEW_OPINION_OR_DELETE_OPINION);
-            log.info("Dislike from user with id={} to review with id={} deleted", evaluatorId, reviewId);
+            dislikesDecrease(review, evaluatorId);
         }
-        reviewStorage.save(review);
         opinionStorage.delete(opinion);
-    }
-
-    private Opinion getOpinionByReviewIdAndEvaluatorId(Long reviewId, Long evaluatorId) {
-        return opinionStorage.findOneByReview_IdAndEvaluator_Id(reviewId, evaluatorId);
     }
 }
