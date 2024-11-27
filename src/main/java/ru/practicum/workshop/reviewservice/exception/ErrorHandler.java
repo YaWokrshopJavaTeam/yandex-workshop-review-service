@@ -71,6 +71,14 @@ public class ErrorHandler {
                 e.getMessage());
     }
 
+    @ExceptionHandler(ConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleConflict(final ConflictException e) {
+        log(e);
+        return createMap("CONFLICT", "The request data conflicts with the data stored on the server.",
+                e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleOtherExc(final Exception e) {

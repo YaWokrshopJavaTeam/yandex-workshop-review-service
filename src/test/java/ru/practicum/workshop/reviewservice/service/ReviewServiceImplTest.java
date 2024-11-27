@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.workshop.reviewservice.enums.Label;
 import ru.practicum.workshop.reviewservice.exception.*;
 import ru.practicum.workshop.reviewservice.model.*;
 import ru.practicum.workshop.reviewservice.storage.*;
@@ -21,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles(value = "test")
 @RequiredArgsConstructor(onConstructor_= @Autowired)
 public class ReviewServiceImplTest {
     private final ReviewService reviewService;
@@ -30,6 +33,7 @@ public class ReviewServiceImplTest {
     private static Review review;
     private static User author;
     private static Long userId = 0L;
+    private static final Long evaluatorId = 1L;
 
     @BeforeEach
     void beforeEach() {
@@ -260,6 +264,102 @@ public class ReviewServiceImplTest {
             reviewService.deleteReview(review.getId(), authorId);
         });
         final String expectedMessage = String.format("You don't have access to review with id = %d", review.getId());
+        final String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @DisplayName("Поставить лайк отзыву")
+    @Test
+    void putLike() {
+        long likes = review.getLikes();
+        reviewService.addLike(review.getId(), evaluatorId);
+        assertEquals(likes + 1, review.getLikes());
+    }
+
+    @DisplayName("Удалить лайк отзыву")
+    @Test
+    void removeLike() {
+        long likes = review.getLikes();
+        reviewService.addLike(review.getId(), evaluatorId);
+        assertEquals(likes + 1, review.getLikes());
+        reviewService.removeLike(review.getId(), evaluatorId);
+        assertEquals(likes, review.getLikes());
+    }
+
+    @DisplayName("Поставить дизлайк отзыву")
+    @Test
+    void putDislike() {
+        long disLikes = review.getLikes();
+        reviewService.addDislike(review.getId(), evaluatorId);
+        assertEquals(disLikes + 1, review.getDislikes());
+    }
+
+    @DisplayName("Удалить дизлайк отзыву")
+    @Test
+    void removeDislike() {
+        long disLikes = review.getLikes();
+        reviewService.addDislike(review.getId(), evaluatorId);
+        assertEquals(disLikes + 1, review.getDislikes());
+        reviewService.removeDislike(review.getId(), evaluatorId);
+        assertEquals(disLikes, review.getDislikes());
+    }
+
+    @DisplayName("Поставить сначала лайк, а потом дизлайк отзыву")
+    @Test
+    void putLikeAndDislike() {
+        long likes = review.getLikes();
+        long disLikes = review.getLikes();
+        reviewService.addLike(review.getId(), evaluatorId);
+        assertEquals(likes + 1, review.getLikes());
+        reviewService.addDislike(review.getId(), evaluatorId);
+        assertEquals(likes, review.getLikes());
+        assertEquals(disLikes, review.getDislikes());
+    }
+
+    @DisplayName("Поставить сначала дизлайк, а потом лайк отзыву")
+    @Test
+    void putDislikeAndLike() {
+        long disLikes = review.getLikes();
+        long likes = review.getLikes();
+        reviewService.addDislike(review.getId(), evaluatorId);
+        assertEquals(disLikes + 1, review.getDislikes());
+        reviewService.addLike(review.getId(), evaluatorId);
+        assertEquals(disLikes, review.getDislikes());
+        assertEquals(likes, review.getLikes());
+    }
+
+    @DisplayName("Ошибка Forbidden при попытке поставить лайк/дизлайк автором отзыва")
+    @Test
+    void shouldThrowForbiddenWhenAddLikeByAuthor() {
+        final Exception exception = assertThrows(ForbiddenException.class, () -> {
+            reviewService.addLike(review.getId(), review.getAuthor().getId());
+        });
+        final String expectedMessage = String.format(String.format("As author of review, you can't put %s to review with id = %d", Label.LIKE, review.getId()));
+        final String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @DisplayName("Ошибка Conflict при попытке поставить повторный лайк/дизлайк")
+    @Test
+    void shouldThrowConflictWhenAddSecondLike() {
+        reviewService.addLike(review.getId(), evaluatorId);
+        final Exception exception = assertThrows(ConflictException.class, () -> {
+            reviewService.addLike(review.getId(), evaluatorId);
+        });
+        final String expectedMessage = String.format(String.format("You have already put %s review with id = %d and cannot do it again", Label.LIKE, review.getId()));
+        final String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @DisplayName("Ошибка Conflict при попытке после постановки лайка/дизлайка удалить дизлайк/лайк")
+    @Test
+    void shouldThrowConflictWhenAddLikeButRemoveDislike() {
+        reviewService.addLike(review.getId(), evaluatorId);
+        final Exception exception = assertThrows(ConflictException.class, () -> {
+            reviewService.removeDislike(review.getId(), evaluatorId);
+        });
+        final String expectedMessage = String.format(String.format("You have put %s to review with id = %d, but want to delete %s. " +
+                " The operation cannot be performed.", Label.LIKE, review.getId(), Label.DISLIKE));
         final String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }

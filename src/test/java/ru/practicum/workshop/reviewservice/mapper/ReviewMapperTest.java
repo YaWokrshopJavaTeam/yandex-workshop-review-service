@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.workshop.reviewservice.dto.ReviewCreateDto;
 import ru.practicum.workshop.reviewservice.dto.ReviewDto;
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles(value = "test")
 @RequiredArgsConstructor(onConstructor_= @Autowired)
 public class ReviewMapperTest {
     private final ReviewMapper mapper;
@@ -39,6 +41,8 @@ public class ReviewMapperTest {
                 .content("content")
                 .createdOn(LocalDateTime.now())
                 .mark(1)
+                .likes(0L)
+                .dislikes(0L)
                 .build();
     }
 
@@ -53,7 +57,9 @@ public class ReviewMapperTest {
                 review.getContent(),
                 review.getCreatedOn(),
                 review.getUpdatedOn(),
-                review.getMark());
+                review.getMark(),
+                review.getLikes(),
+                review.getDislikes());
         ReviewDtoWithAuthor dto = mapper.toDtoWithAuthor(review);
 
         assertNotNull(dto);
@@ -70,7 +76,9 @@ public class ReviewMapperTest {
                 review.getContent(),
                 review.getCreatedOn(),
                 review.getUpdatedOn(),
-                review.getMark());
+                review.getMark(),
+                review.getLikes(),
+                review.getDislikes());
         ReviewDto dto = mapper.toDtoWithoutAuthor(review);
 
         assertNotNull(dto);

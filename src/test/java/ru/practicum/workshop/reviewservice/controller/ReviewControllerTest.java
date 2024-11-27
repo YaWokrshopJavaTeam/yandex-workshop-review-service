@@ -21,25 +21,24 @@ import ru.practicum.workshop.reviewservice.dto.ReviewUpdateDto;
 import ru.practicum.workshop.reviewservice.mapper.ReviewMapper;
 import ru.practicum.workshop.reviewservice.mapper.ReviewMapperImpl;
 import ru.practicum.workshop.reviewservice.model.Review;
-import ru.practicum.workshop.reviewservice.model.User;
 import ru.practicum.workshop.reviewservice.service.ReviewService;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.practicum.workshop.reviewservice.dto.ReviewDtoValidationConstants.*;
 
 @WebMvcTest(controllers = ReviewController.class)
 @RequiredArgsConstructor(onConstructor_= @Autowired)
 @Import(ReviewMapperImpl.class)
 class ReviewControllerTest {
-    private final MockMvc mvc;
     private final ObjectMapper mapper;
+    private final MockMvc mvc;
 
     @MockBean
     private final ReviewService reviewService;
@@ -558,5 +557,45 @@ class ReviewControllerTest {
         verify(reviewService, times(1))
                 .deleteReview(any(Long.class), any(Long.class));
         verifyNoMoreInteractions(reviewService);
+    }
+
+    @DisplayName("Добавить лайк по id ревью и id пользователя")
+    @Test
+    void putLikeByReviewIdAndEvaluatorId() throws Exception {
+        mvc.perform(put("/reviews/{id}/like", 1)
+                        .header("X-Review-User-Id", 1)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("Добавить дизлайк по id ревью и id пользователя")
+    @Test
+    void putDislikeByReviewIdAndEvaluatorId() throws Exception {
+        mvc.perform(put("/reviews/{id}/dislike", 1)
+                        .header("X-Review-User-Id", 1)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("Удалить лайк по id ревью и id пользователя")
+    @Test
+    void deleteLikeByReviewIdAndEvaluatorId() throws Exception {
+        mvc.perform(delete("/reviews/{id}/like", 1)
+                        .header("X-Review-User-Id", 1)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @DisplayName("Удалить дизлайк по id ревью и id пользователя")
+    @Test
+    void deleteDislikeByReviewIdAndEvaluatorId() throws Exception {
+        mvc.perform(delete("/reviews/{id}/dislike", 1)
+                        .header("X-Review-User-Id", 1)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
     }
 }
