@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.workshop.reviewservice.dto.Constants;
+import ru.practicum.workshop.reviewservice.dto.analytics.EventAverageScore;
 import ru.practicum.workshop.reviewservice.enums.Label;
 import ru.practicum.workshop.reviewservice.exception.ConflictException;
 import ru.practicum.workshop.reviewservice.exception.ForbiddenException;
@@ -208,5 +209,9 @@ public class ReviewServiceImpl implements ReviewService {
             dislikesDecrease(review, evaluatorId);
         }
         opinionStorage.delete(opinion);
+    }
+
+    public EventAverageScore getEventAverageScore(Long eventId) {
+        return reviewStorage.getEventAverageScore(eventId);
     }
 }
