@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventAverageScore {
+public class EventAverageMark {
     protected Long eventId;
     protected Double averageScore;
 }

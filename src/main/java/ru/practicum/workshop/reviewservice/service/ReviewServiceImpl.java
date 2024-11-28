@@ -7,21 +7,31 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.workshop.reviewservice.dto.Constants;
-import ru.practicum.workshop.reviewservice.dto.analytics.EventAverageScore;
+import ru.practicum.workshop.reviewservice.dto.ReviewDtoWithAuthor;
+import ru.practicum.workshop.reviewservice.dto.analytics.AuthorAverageMark;
+import ru.practicum.workshop.reviewservice.dto.analytics.BestAndWorstReviews;
+import ru.practicum.workshop.reviewservice.dto.analytics.EventAverageMark;
+import ru.practicum.workshop.reviewservice.dto.analytics.EventIndicators;
 import ru.practicum.workshop.reviewservice.enums.Label;
 import ru.practicum.workshop.reviewservice.exception.ConflictException;
 import ru.practicum.workshop.reviewservice.exception.ForbiddenException;
+import ru.practicum.workshop.reviewservice.mapper.ReviewMapper;
 import ru.practicum.workshop.reviewservice.storage.*;
 import ru.practicum.workshop.reviewservice.model.*;
 
 import java.util.List;
 import java.util.Optional;
 
+import static ru.practicum.workshop.reviewservice.dto.Constants.LIMIT_OF_REVIEWS_IN_ISSUE;
+import static ru.practicum.workshop.reviewservice.dto.Constants.MARK_LIMITATION_BEST_REVIEWS;
+import static ru.practicum.workshop.reviewservice.dto.Constants.MARK_LIMITATION_WORST_REVIEWS;
+
 @Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
+    private final ReviewMapper reviewMapper;
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
     private final OpinionStorage opinionStorage;
@@ -211,7 +221,47 @@ public class ReviewServiceImpl implements ReviewService {
         opinionStorage.delete(opinion);
     }
 
-    public EventAverageScore getEventAverageScore(Long eventId) {
-        return reviewStorage.getEventAverageScore(eventId);
+    @Transactional(readOnly = true)
+    @Override
+    public EventAverageMark getEventAverageMark(Long eventId) {
+        double eventAverageMark = Math.floor(reviewStorage.getEventAverageMark(eventId) * 10) / 10;
+        return new EventAverageMark(eventId, eventAverageMark);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public AuthorAverageMark getAuthorAverageMark(Long authorId) {
+        double eventAverageMark = Math.floor(reviewStorage.getAuthorAverageMark(authorId) * 10) / 10;
+        return new AuthorAverageMark(authorId, eventAverageMark);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public EventIndicators getEventIndicators(Long eventId) {
+        int numberOfNegativeReviews = reviewStorage.getNumberOfNegativeReviews(eventId);
+        int numberOfPositiveReviews = reviewStorage.getNumberOfPositiveReviews(eventId);
+        int numberOfReviews = numberOfNegativeReviews + numberOfPositiveReviews;
+        if (numberOfReviews == 0) {
+            return new EventIndicators(eventId, 0, 0, 0);
+        }
+        int positiveReviewsPercent = (int) (numberOfPositiveReviews * 100.0 / numberOfReviews);
+        int negativeReviewsPercent = (int) (numberOfNegativeReviews * 100.0 / numberOfReviews);
+        return new EventIndicators(eventId, numberOfReviews, positiveReviewsPercent, negativeReviewsPercent);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public BestAndWorstReviews getBestAndWorstReviews(Long eventId) {
+        List<ReviewDtoWithAuthor> bestReviews = reviewStorage.findBestEvents(eventId, MARK_LIMITATION_BEST_REVIEWS,
+                        LIMIT_OF_REVIEWS_IN_ISSUE)
+                .stream()
+                .map(reviewMapper::toDtoWithAuthor)
+                .toList();
+        List<ReviewDtoWithAuthor> worstReviews = reviewStorage.findWorstEvents(eventId, MARK_LIMITATION_WORST_REVIEWS,
+                        LIMIT_OF_REVIEWS_IN_ISSUE)
+                .stream()
+                .map(reviewMapper::toDtoWithAuthor)
+                .toList();
+        return new BestAndWorstReviews(bestReviews, worstReviews);
     }
 }
