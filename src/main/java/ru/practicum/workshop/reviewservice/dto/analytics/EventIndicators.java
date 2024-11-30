@@ -12,6 +12,6 @@ import lombok.Setter;
 public class EventIndicators {
     protected Long eventId;
     protected Integer numberOfReviews;
-    protected Integer positiveReviewsPercent;
-    protected Integer negativeReviewsPercent;
+    protected Double positiveReviewsPercent;
+    protected Double negativeReviewsPercent;
 }

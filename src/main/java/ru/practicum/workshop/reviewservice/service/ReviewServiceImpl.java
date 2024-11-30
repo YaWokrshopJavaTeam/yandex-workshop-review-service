@@ -224,29 +224,38 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     @Override
     public EventAverageMark getEventAverageMark(Long eventId) {
-        double eventAverageMark = Math.floor(reviewStorage.getEventAverageMark(eventId) * 10) / 10;
+        Optional<Double> eventAverageMarkInOptional = reviewStorage.getEventAverageMark(eventId);
+        Double eventAverageMark = eventAverageMarkInOptional.map(aDouble -> Math.floor(aDouble * 10) / 10).orElse(null);
         return new EventAverageMark(eventId, eventAverageMark);
     }
 
     @Transactional(readOnly = true)
     @Override
     public AuthorAverageMark getAuthorAverageMark(Long authorId) {
-        double eventAverageMark = Math.floor(reviewStorage.getAuthorAverageMark(authorId) * 10) / 10;
-        return new AuthorAverageMark(authorId, eventAverageMark);
+        Optional<Double> authorAverageMarkInOptional = reviewStorage.getAuthorAverageMark(authorId);
+        Double authorAverageMark = authorAverageMarkInOptional.map(aDouble -> Math.floor(aDouble * 10) / 10).orElse(null);
+        return new AuthorAverageMark(authorId, authorAverageMark);
     }
 
     @Transactional(readOnly = true)
     @Override
     public EventIndicators getEventIndicators(Long eventId) {
-        int numberOfNegativeReviews = reviewStorage.getNumberOfNegativeReviews(eventId);
-        int numberOfPositiveReviews = reviewStorage.getNumberOfPositiveReviews(eventId);
-        int numberOfReviews = numberOfNegativeReviews + numberOfPositiveReviews;
-        if (numberOfReviews == 0) {
-            return new EventIndicators(eventId, 0, 0, 0);
+        Optional<Integer> numberOfNegativeReviewsInOptional = reviewStorage.getNumberOfNegativeReviews(eventId);
+        Integer numberOfNegativeReviews = numberOfNegativeReviewsInOptional.orElse(null);
+        Optional<Integer> numberOfPositiveReviewsInOptional = reviewStorage.getNumberOfPositiveReviews(eventId);
+        Integer numberOfPositiveReviews = numberOfPositiveReviewsInOptional.orElse(null);
+        if (numberOfNegativeReviews == null && numberOfPositiveReviews == null) {
+            return new EventIndicators(eventId, null, null, null);
+        } else if (numberOfNegativeReviews != null && numberOfPositiveReviews == null) {
+            return new EventIndicators(eventId, numberOfNegativeReviews, 0.0, 100.0);
+        } else if (numberOfNegativeReviews == null) {
+            return new EventIndicators(eventId, numberOfPositiveReviews, 100.0, 0.0);
+        } else {
+            int numberOfReviews = numberOfNegativeReviews + numberOfPositiveReviews;
+            Double positiveReviewsPercent = Math.floor((numberOfPositiveReviews * 100.0 / numberOfReviews) * 10) / 10;
+            Double negativeReviewsPercent = Math.floor((numberOfNegativeReviews * 100.0 / numberOfReviews) * 10) / 10;
+            return new EventIndicators(eventId, numberOfReviews, positiveReviewsPercent, negativeReviewsPercent);
         }
-        int positiveReviewsPercent = (int) (numberOfPositiveReviews * 100.0 / numberOfReviews);
-        int negativeReviewsPercent = (int) (numberOfNegativeReviews * 100.0 / numberOfReviews);
-        return new EventIndicators(eventId, numberOfReviews, positiveReviewsPercent, negativeReviewsPercent);
     }
 
     @Transactional(readOnly = true)
@@ -262,6 +271,6 @@ public class ReviewServiceImpl implements ReviewService {
                 .stream()
                 .map(reviewMapper::toDtoWithAuthor)
                 .toList();
-        return new BestAndWorstReviews(bestReviews, worstReviews);
+        return new BestAndWorstReviews(eventId, bestReviews, worstReviews);
     }
 }

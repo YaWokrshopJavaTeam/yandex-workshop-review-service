@@ -18,6 +18,10 @@ import ru.practicum.workshop.reviewservice.dto.ReviewCreateDto;
 import ru.practicum.workshop.reviewservice.dto.ReviewDto;
 import ru.practicum.workshop.reviewservice.dto.ReviewDtoWithAuthor;
 import ru.practicum.workshop.reviewservice.dto.ReviewUpdateDto;
+import ru.practicum.workshop.reviewservice.dto.analytics.AuthorAverageMark;
+import ru.practicum.workshop.reviewservice.dto.analytics.BestAndWorstReviews;
+import ru.practicum.workshop.reviewservice.dto.analytics.EventAverageMark;
+import ru.practicum.workshop.reviewservice.dto.analytics.EventIndicators;
 import ru.practicum.workshop.reviewservice.mapper.ReviewMapper;
 import ru.practicum.workshop.reviewservice.mapper.ReviewMapperImpl;
 import ru.practicum.workshop.reviewservice.model.Review;
@@ -349,7 +353,7 @@ class ReviewControllerTest {
         verifyNoInteractions(reviewService);
     }
 
-    @DisplayName("Валидация обновления отзыва - остутствие header")
+    @DisplayName("Валидация обновления отзыва - отсутствие header")
     @Test
     void shouldThrowBadRequestWhenUpdateReviewNullAuthorId() throws Exception {
         updateDto = createUpdateDto();
@@ -597,5 +601,127 @@ class ReviewControllerTest {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
+    }
+
+    private EventAverageMark createEventAverageMark() {
+        return new EventAverageMark(id, 7.3);
+    }
+
+    private MockHttpServletResponse getEventAverageMarkResponse(Long id) throws Exception {
+        result = mvc.perform(get("/reviews/analytics/average-mark/event/" + id)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andReturn();
+        return result.getResponse();
+    }
+
+    @DisplayName("Получить среднюю оценку события по eventId")
+    @Test
+    void getEventAverageMarkByEventId() throws Exception {
+        EventAverageMark eventAverageMark = createEventAverageMark();
+
+        when(reviewService.getEventAverageMark(any(Long.class)))
+                .thenReturn(eventAverageMark);
+
+        response = getEventAverageMarkResponse(++id);
+
+        assertEquals(200, response.getStatus());
+        assertEquals(mapper.writeValueAsString(eventAverageMark), response.getContentAsString());
+
+        verify(reviewService, times(1))
+                .getEventAverageMark(any(Long.class));
+        verifyNoMoreInteractions(reviewService);
+    }
+
+    private AuthorAverageMark createAuthorAverageMark() {
+        return new AuthorAverageMark(id, 8.3);
+    }
+
+    private MockHttpServletResponse getAuthorAverageMarkResponse(Long id) throws Exception {
+        result = mvc.perform(get("/reviews/analytics/average-mark/author/" + id)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andReturn();
+        return result.getResponse();
+    }
+
+    @DisplayName("Получить среднюю оценку автора по authorId")
+    @Test
+    void getAuthorAverageMarkByAuthorId() throws Exception {
+        AuthorAverageMark authorAverageMark = createAuthorAverageMark();
+
+        when(reviewService.getAuthorAverageMark(any(Long.class)))
+                .thenReturn(authorAverageMark);
+
+        response = getAuthorAverageMarkResponse(++id);
+
+        assertEquals(200, response.getStatus());
+        assertEquals(mapper.writeValueAsString(authorAverageMark), response.getContentAsString());
+
+        verify(reviewService, times(1))
+                .getAuthorAverageMark(any(Long.class));
+        verifyNoMoreInteractions(reviewService);
+    }
+
+    private EventIndicators createEventIndicators() {
+        return new EventIndicators(id, 100, 50.0, 50.0);
+    }
+
+    private MockHttpServletResponse getEventIndicatorsResponse(Long id) throws Exception {
+        result = mvc.perform(get("/reviews/analytics/indicators/event/" + id)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andReturn();
+        return result.getResponse();
+    }
+
+    @DisplayName("Получить количество отзывов, процент хороших и процент плохих отзывов по eventId")
+    @Test
+    void getEventIndicatorsByEventId() throws Exception {
+        EventIndicators eventIndicators = createEventIndicators();
+
+        when(reviewService.getEventIndicators(any(Long.class)))
+                .thenReturn(eventIndicators);
+
+        response = getEventIndicatorsResponse(++id);
+
+        assertEquals(200, response.getStatus());
+        assertEquals(mapper.writeValueAsString(eventIndicators), response.getContentAsString());
+
+        verify(reviewService, times(1))
+                .getEventIndicators(any(Long.class));
+        verifyNoMoreInteractions(reviewService);
+    }
+
+    private MockHttpServletResponse getBestAndWorstReviewsResponse(Long id) throws Exception {
+        result = mvc.perform(get("/reviews/analytics/best-and-worst/event/" + id)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andReturn();
+        return result.getResponse();
+    }
+
+    private BestAndWorstReviews createBestAndWorstReviews() {
+        createDto = createCreationDto();
+        ReviewCreateDto createDto2 = createCreationDto();
+        review = reviewMapper.toEntity(createDto);
+        Review review1 = reviewMapper.toEntity(createDto2);
+        dtoWithAuthorId = reviewMapper.toDtoWithAuthor(review);
+        ReviewDtoWithAuthor dtoWithAuthorId1 = reviewMapper.toDtoWithAuthor(review1);
+        return new BestAndWorstReviews(review.getEventId(), List.of(dtoWithAuthorId), List.of(dtoWithAuthorId1));
+    }
+
+    @DisplayName("Получить лучшие и худшие отзывы по eventId")
+    @Test
+    void getBestAndWorstReviewsByEventId() throws Exception {
+        BestAndWorstReviews bestAndWorstReviews = createBestAndWorstReviews();
+
+        when(reviewService.getBestAndWorstReviews(any(Long.class)))
+                .thenReturn(bestAndWorstReviews);
+
+        response = getBestAndWorstReviewsResponse(++id);
+
+        assertEquals(200, response.getStatus());
+        assertEquals(mapper.writeValueAsString(bestAndWorstReviews), response.getContentAsString());
+
+        verify(reviewService, times(1))
+                .getBestAndWorstReviews(any(Long.class));
+        verifyNoMoreInteractions(reviewService);
     }
 }

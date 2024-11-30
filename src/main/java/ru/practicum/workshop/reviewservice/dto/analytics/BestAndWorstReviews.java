@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BestAndWorstReviews {
+    protected Long eventId;
     protected List<ReviewDtoWithAuthor> bestReviews;
     protected List<ReviewDtoWithAuthor> worstReviews;
 }

@@ -23,7 +23,7 @@ public interface ReviewStorage extends JpaRepository<Review, Long> {
                 "FROM Review AS r " +
                 "WHERE r.eventId = :eventId AND r.likes + r.dislikes > 10 AND r.dislikes > r.likes) " +
             "GROUP BY r.eventId")
-    double getEventAverageMark(@Param("eventId") Long eventId);
+    Optional<Double> getEventAverageMark(@Param("eventId") Long eventId);
 
     @Query("SELECT AVG(r.mark) " +
             "FROM Review AS r " +
@@ -32,19 +32,19 @@ public interface ReviewStorage extends JpaRepository<Review, Long> {
                 "FROM Review AS r " +
                 "WHERE r.author.id = :authorId AND r.likes + r.dislikes > 10 AND r.dislikes > r.likes) " +
             "GROUP BY r.author.id")
-    double getAuthorAverageMark(@Param("authorId") Long authorId);
+    Optional<Double> getAuthorAverageMark(@Param("authorId") Long authorId);
 
     @Query("SELECT COUNT(r.eventId) " +
             "FROM Review AS r " +
             "WHERE r.eventId = :eventId AND r.mark < 6 " +
             "GROUP BY r.eventId")
-    int getNumberOfNegativeReviews(@Param("eventId") Long eventId);
+    Optional<Integer> getNumberOfNegativeReviews(@Param("eventId") Long eventId);
 
     @Query("SELECT COUNT(r.eventId) " +
             "FROM Review AS r " +
             "WHERE r.eventId = :eventId AND r.mark > 5 " +
             "GROUP BY r.eventId")
-    int getNumberOfPositiveReviews(@Param("eventId") Long eventId);
+    Optional<Integer> getNumberOfPositiveReviews(@Param("eventId") Long eventId);
 
     @Query("SELECT r " +
             "FROM Review AS r " +

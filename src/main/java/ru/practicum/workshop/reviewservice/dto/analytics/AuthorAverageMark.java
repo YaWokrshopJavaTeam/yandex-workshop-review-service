@@ -11,5 +11,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AuthorAverageMark {
     protected Long authorId;
-    protected Double averageScore;
+    protected Double averageMark;
 }
