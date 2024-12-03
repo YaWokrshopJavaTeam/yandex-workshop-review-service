@@ -298,7 +298,7 @@ public class ReviewServiceAnalyticsTest {
     @DisplayName("Проверка расчёта общего количества и соотношения хороших и плохих отзывов, когда негативных отзывов больше")
     @Rollback
     @Test
-    public void getEventIndicatorsWithNegativeReviews() {
+    public void getEventIndicatorsWithMostlyNegativeReviews() {
         Long eventIdWith1NegativeReview = 1L;
         Integer numberOfReviewsForEventId1L = 3;
         Double positiveReviewsPercent = Math.floor((1 * 100.0 / 3) * 10) / 10;
