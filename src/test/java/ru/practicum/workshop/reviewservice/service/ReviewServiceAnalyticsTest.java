@@ -11,7 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.workshop.reviewservice.dto.ReviewDtoWithAuthor;
+import ru.practicum.workshop.reviewservice.dto.ReviewDto;
 import ru.practicum.workshop.reviewservice.dto.analytics.AuthorAverageMark;
 import ru.practicum.workshop.reviewservice.dto.analytics.BestAndWorstReviews;
 import ru.practicum.workshop.reviewservice.dto.analytics.EventAverageMark;
@@ -331,8 +331,8 @@ public class ReviewServiceAnalyticsTest {
     public void getBestAndWorstReviews() {
         Long eventIdWithoutReviews = 100L;
         BestAndWorstReviews bestAndWorstReviews = reviewService.getBestAndWorstReviews(eventIdWithoutReviews);
-        List<ReviewDtoWithAuthor> bestReviewsWithoutReviews = List.of();
-        List<ReviewDtoWithAuthor> worstReviewsWithoutReviews = List.of();
+        List<ReviewDto> bestReviewsWithoutReviews = List.of();
+        List<ReviewDto> worstReviewsWithoutReviews = List.of();
         assertEquals(eventIdWithoutReviews, bestAndWorstReviews.getEventId());
         assertEquals(bestReviewsWithoutReviews, bestAndWorstReviews.getBestReviews());
         assertEquals(worstReviewsWithoutReviews, bestAndWorstReviews.getWorstReviews());

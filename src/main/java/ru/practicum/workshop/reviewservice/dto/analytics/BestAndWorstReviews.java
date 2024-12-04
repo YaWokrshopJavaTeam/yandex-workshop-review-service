@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.practicum.workshop.reviewservice.dto.ReviewDtoWithAuthor;
+import ru.practicum.workshop.reviewservice.dto.ReviewDto;
 
 import java.util.List;
 
@@ -14,6 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 public class BestAndWorstReviews {
     protected Long eventId;
-    protected List<ReviewDtoWithAuthor> bestReviews;
-    protected List<ReviewDtoWithAuthor> worstReviews;
+    protected List<ReviewDto> bestReviews;
+    protected List<ReviewDto> worstReviews;
 }

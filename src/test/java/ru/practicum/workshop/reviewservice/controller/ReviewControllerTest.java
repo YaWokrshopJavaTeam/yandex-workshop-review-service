@@ -702,9 +702,9 @@ class ReviewControllerTest {
         ReviewCreateDto createDto2 = createCreationDto();
         review = reviewMapper.toEntity(createDto);
         Review review1 = reviewMapper.toEntity(createDto2);
-        dtoWithAuthorId = reviewMapper.toDtoWithAuthor(review);
-        ReviewDtoWithAuthor dtoWithAuthorId1 = reviewMapper.toDtoWithAuthor(review1);
-        return new BestAndWorstReviews(review.getEventId(), List.of(dtoWithAuthorId), List.of(dtoWithAuthorId1));
+        ReviewDto dtoWithoutAuthorId = reviewMapper.toDtoWithoutAuthor(review);
+        ReviewDto dtoWithoutAuthorId1 = reviewMapper.toDtoWithoutAuthor(review1);
+        return new BestAndWorstReviews(review.getEventId(), List.of(dtoWithoutAuthorId), List.of(dtoWithoutAuthorId1));
     }
 
     @DisplayName("Получить лучшие и худшие отзывы по eventId")

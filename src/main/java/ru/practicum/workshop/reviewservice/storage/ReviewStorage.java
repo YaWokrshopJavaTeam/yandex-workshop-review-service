@@ -18,33 +18,31 @@ public interface ReviewStorage extends JpaRepository<Review, Long> {
 
     @Query("SELECT AVG(r.mark) " +
             "FROM Review AS r " +
-            "WHERE r.eventId = :eventId AND r.id NOT IN " +
-                "(SELECT r.id " +
-                "FROM Review AS r " +
-                "WHERE r.eventId = :eventId AND r.likes + r.dislikes > 10 AND r.dislikes > r.likes) " +
+            "WHERE r.eventId = :eventId AND (r.likes + r.dislikes <= :sumLimitation OR r.dislikes < r.likes) " +
             "GROUP BY r.eventId")
-    Optional<Double> getEventAverageMark(@Param("eventId") Long eventId);
+    Optional<Double> getEventAverageMark(@Param("eventId") Long eventId,
+                                         @Param("sumLimitation") Integer sumLimitation);
 
     @Query("SELECT AVG(r.mark) " +
             "FROM Review AS r " +
-            "WHERE r.author.id = :authorId AND r.id NOT IN " +
-                "(SELECT r.id " +
-                "FROM Review AS r " +
-                "WHERE r.author.id = :authorId AND r.likes + r.dislikes > 10 AND r.dislikes > r.likes) " +
+            "WHERE r.author.id = :authorId AND (r.likes + r.dislikes <= :sumLimitation OR r.dislikes < r.likes) " +
             "GROUP BY r.author.id")
-    Optional<Double> getAuthorAverageMark(@Param("authorId") Long authorId);
+    Optional<Double> getAuthorAverageMark(@Param("authorId") Long authorId,
+                                          @Param("sumLimitation") Integer sumLimitation);
 
     @Query("SELECT COUNT(r.eventId) " +
             "FROM Review AS r " +
-            "WHERE r.eventId = :eventId AND r.mark < 6 " +
+            "WHERE r.eventId = :eventId AND r.mark < :markLimitation " +
             "GROUP BY r.eventId")
-    Optional<Integer> getNumberOfNegativeReviews(@Param("eventId") Long eventId);
+    Optional<Integer> getNumberOfNegativeReviews(@Param("eventId") Long eventId,
+                                                 @Param("markLimitation") Integer markLimitation);
 
     @Query("SELECT COUNT(r.eventId) " +
             "FROM Review AS r " +
-            "WHERE r.eventId = :eventId AND r.mark > 5 " +
+            "WHERE r.eventId = :eventId AND r.mark > :markLimitation " +
             "GROUP BY r.eventId")
-    Optional<Integer> getNumberOfPositiveReviews(@Param("eventId") Long eventId);
+    Optional<Integer> getNumberOfPositiveReviews(@Param("eventId") Long eventId,
+                                                 @Param("markLimitation") Integer markLimitation);
 
     @Query("SELECT r " +
             "FROM Review AS r " +
