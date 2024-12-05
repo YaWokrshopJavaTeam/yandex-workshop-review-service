@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "de0cc886-c754-4926-baa3-21f3208e244f",
-		"name": "review-service",
+		"_postman_id": "71065fa4-dc84-4c50-b0d2-9184ebee1407",
+		"name": "review-service-likes-and-analytics",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "33433593"
+		"_exporter_id": "32172174"
 	},
 	"item": [
 		{
@@ -183,7 +183,7 @@
 											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
-											"    pm.expect(0).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -392,7 +392,7 @@
 											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
-											"    pm.expect(0).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -601,7 +601,7 @@
 											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
-											"    pm.expect(0).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -719,7 +719,7 @@
 											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
-											"    pm.expect(0).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -928,7 +928,7 @@
 											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
-											"    pm.expect(0).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -1137,7 +1137,7 @@
 											"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
 											"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
-											"    pm.expect(0).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+											"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -4058,6 +4058,3284 @@
 			]
 		},
 		{
+			"name": "Лайки и дизлайки",
+			"item": [
+				{
+					"name": "Ошибки при работе с лайками / дизлайками",
+					"item": [
+						{
+							"name": "Лайк от автора отзыва",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const review = await api.addReview(rnd.getReview());\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('evaluatorId', pm.collectionVariables.get('authorId'));\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 403 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{evaluatorId}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/reviews/{{reviewId}}/like",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										"{{reviewId}}",
+										"like"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Дизлайк от автора отзыва",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const review = await api.addReview(rnd.getReview());\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('evaluatorId', pm.collectionVariables.get('authorId'));\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 403 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(403);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{evaluatorId}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/reviews/{{reviewId}}/dislike",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										"{{reviewId}}",
+										"dislike"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Повторно поставить лайк отзыву",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const review = await api.addReview(rnd.getReview());\r",
+											"        pm.collectionVariables.set('evaluatorId', _.random(1001, 2000));\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        let response\r",
+											"        let body\r",
+											"        const evaluator = pm.collectionVariables.get('evaluatorId') + '';\r",
+											"        const req = {\r",
+											"                url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/like\",\r",
+											"                method: \"PUT\",\r",
+											"                header: { \"Accept\": \"application/json\",\r",
+											"                \"Content-Type\": \"application/json\", \r",
+											"                \"X-Review-User-Id\": evaluator },\r",
+											"                body: body == null ? \"\" : JSON.stringify(body)\r",
+											"                };\r",
+											"\r",
+											"        pm.sendRequest(req, (error, response) => {\r",
+											"            if (error) throw new Error(error);\r",
+											"        });\r",
+											"\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 409 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(409);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{evaluatorId}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/reviews/{{reviewId}}/like",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										"{{reviewId}}",
+										"like"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Повторно поставить дизлайк отзыву",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const review = await api.addReview(rnd.getReview());\r",
+											"        pm.collectionVariables.set('evaluatorId', _.random(1001, 2000));\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        let response\r",
+											"        let body\r",
+											"        const evaluator = pm.collectionVariables.get('evaluatorId') + '';\r",
+											"        const req = {\r",
+											"                url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/dislike\",\r",
+											"                method: \"PUT\",\r",
+											"                header: { \"Accept\": \"application/json\",\r",
+											"                \"Content-Type\": \"application/json\", \r",
+											"                \"X-Review-User-Id\": evaluator },\r",
+											"                body: body == null ? \"\" : JSON.stringify(body)\r",
+											"                };\r",
+											"\r",
+											"        pm.sendRequest(req, (error, response) => {\r",
+											"            if (error) throw new Error(error);\r",
+											"        });\r",
+											"\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 409 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(409);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{evaluatorId}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/reviews/{{reviewId}}/dislike",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										"{{reviewId}}",
+										"dislike"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Поставить лайк а удалить дизлайк отзывa",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const review = await api.addReview(rnd.getReview());\r",
+											"        pm.collectionVariables.set('evaluatorId', _.random(1001, 2000));\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        let response\r",
+											"        let body\r",
+											"        const evaluator = pm.collectionVariables.get('evaluatorId') + '';\r",
+											"        const req = {\r",
+											"                url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/like\",\r",
+											"                method: \"PUT\",\r",
+											"                header: { \"Accept\": \"application/json\",\r",
+											"                \"Content-Type\": \"application/json\", \r",
+											"                \"X-Review-User-Id\": evaluator },\r",
+											"                body: body == null ? \"\" : JSON.stringify(body)\r",
+											"                };\r",
+											"\r",
+											"        pm.sendRequest(req, (error, response) => {\r",
+											"            if (error) throw new Error(error);\r",
+											"        });\r",
+											"\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 409 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(409);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{evaluatorId}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/reviews/{{reviewId}}/dislike",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										"{{reviewId}}",
+										"dislike"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Поставить дизлайк а удалить лайк отзыва",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const review = await api.addReview(rnd.getReview());\r",
+											"        pm.collectionVariables.set('evaluatorId', _.random(1001, 2000));\r",
+											"        pm.collectionVariables.set('authorId', review.authorId);\r",
+											"        pm.collectionVariables.set('reviewId', review.id);\r",
+											"\r",
+											"        let response\r",
+											"        let body\r",
+											"        const evaluator = pm.collectionVariables.get('evaluatorId') + '';\r",
+											"        const req = {\r",
+											"                url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/dislike\",\r",
+											"                method: \"PUT\",\r",
+											"                header: { \"Accept\": \"application/json\",\r",
+											"                \"Content-Type\": \"application/json\", \r",
+											"                \"X-Review-User-Id\": evaluator },\r",
+											"                body: body == null ? \"\" : JSON.stringify(body)\r",
+											"                };\r",
+											"\r",
+											"        pm.sendRequest(req, (error, response) => {\r",
+											"            if (error) throw new Error(error);\r",
+											"        });\r",
+											"\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 409 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(409);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Review-User-Id",
+										"value": "{{evaluatorId}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/reviews/{{reviewId}}/like",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"reviews",
+										"{{reviewId}}",
+										"like"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Добавить лайк отзыву",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const review = await api.addReview(rnd.getReview());\r",
+									"        pm.collectionVariables.set('evaluatorId', _.random(1001, 2000));\r",
+									"        pm.collectionVariables.set('authorId', review.authorId);\r",
+									"        pm.collectionVariables.set('reviewId', review.id);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"let response\r",
+									"let body\r",
+									"const req = {\r",
+									"                url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\"),\r",
+									"                method: \"GET\",\r",
+									"                body: body == null ? \"\" : JSON.stringify(body),\r",
+									"                header: { \"Content-Type\": \"application/json\" },\r",
+									"            };\r",
+									"\r",
+									"pm.sendRequest(req, (error, response) => {\r",
+									"    if (error) throw new Error(error);\r",
+									"    pm.test(\"Количество лайков в ревью \" + response.json().id + \" должно быть равно 1\", function () {\r",
+									"        pm.expect(1).equal(response.json().likes);\r",
+									"    })\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Review-User-Id",
+								"value": "{{evaluatorId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/{{reviewId}}/like",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"{{reviewId}}",
+								"like"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Добавить дизлайк отзыву",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const review = await api.addReview(rnd.getReview());\r",
+									"        pm.collectionVariables.set('evaluatorId', _.random(1001, 2000));\r",
+									"        pm.collectionVariables.set('authorId', review.authorId);\r",
+									"        pm.collectionVariables.set('reviewId', review.id);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"let response\r",
+									"let body\r",
+									"const req = {\r",
+									"                url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\"),\r",
+									"                method: \"GET\",\r",
+									"                body: body == null ? \"\" : JSON.stringify(body),\r",
+									"                header: { \"Content-Type\": \"application/json\" },\r",
+									"            };\r",
+									"\r",
+									"pm.sendRequest(req, (error, response) => {\r",
+									"    if (error) throw new Error(error);\r",
+									"    pm.test(\"Количество дизлайков в ревью \" + response.json().id + \" должно быть равно 1\", function () {\r",
+									"        pm.expect(1).equal(response.json().dislikes);\r",
+									"    })\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Review-User-Id",
+								"value": "{{evaluatorId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/{{reviewId}}/dislike",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"{{reviewId}}",
+								"dislike"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удалить лайк отзывa",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const review = await api.addReview(rnd.getReview());\r",
+									"        pm.collectionVariables.set('evaluatorId', _.random(1001, 2000));\r",
+									"        pm.collectionVariables.set('authorId', review.authorId);\r",
+									"        pm.collectionVariables.set('reviewId', review.id);\r",
+									"\r",
+									"        let response\r",
+									"        let body\r",
+									"        const evaluator = pm.collectionVariables.get('evaluatorId') + '';\r",
+									"        const req = {\r",
+									"                url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/like\",\r",
+									"                method: \"PUT\",\r",
+									"                header: { \"Accept\": \"application/json\",\r",
+									"                \"Content-Type\": \"application/json\", \r",
+									"                \"X-Review-User-Id\": evaluator },\r",
+									"                body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                };\r",
+									"\r",
+									"        pm.sendRequest(req, (error, response) => {\r",
+									"            if (error) throw new Error(error);\r",
+									"        });\r",
+									"\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"let response\r",
+									"let body\r",
+									"const req = {\r",
+									"                url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\"),\r",
+									"                method: \"GET\",\r",
+									"                body: body == null ? \"\" : JSON.stringify(body),\r",
+									"                header: { \"Content-Type\": \"application/json\" }\r",
+									"            };\r",
+									"\r",
+									"pm.sendRequest(req, (error, response) => {\r",
+									"    if (error) throw new Error(error);\r",
+									"    pm.test(\"Количество лайков в ревью \" + response.json().id + \" должно быть равно 0\", function () {\r",
+									"        pm.expect(0).equal(response.json().likes);\r",
+									"    })\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Review-User-Id",
+								"value": "{{evaluatorId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/{{reviewId}}/like",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"{{reviewId}}",
+								"like"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удалить дизлайк отзывa",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const review = await api.addReview(rnd.getReview());\r",
+									"        pm.collectionVariables.set('evaluatorId', _.random(1001, 2000));\r",
+									"        pm.collectionVariables.set('authorId', review.authorId);\r",
+									"        pm.collectionVariables.set('reviewId', review.id);\r",
+									"\r",
+									"        let response\r",
+									"        let body\r",
+									"        const evaluator = pm.collectionVariables.get('evaluatorId') + '';\r",
+									"        const req = {\r",
+									"                url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/dislike\",\r",
+									"                method: \"PUT\",\r",
+									"                header: { \"Accept\": \"application/json\",\r",
+									"                \"Content-Type\": \"application/json\", \r",
+									"                \"X-Review-User-Id\": evaluator },\r",
+									"                body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                };\r",
+									"\r",
+									"        pm.sendRequest(req, (error, response) => {\r",
+									"            if (error) throw new Error(error);\r",
+									"        });\r",
+									"\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"let response\r",
+									"let body\r",
+									"const req = {\r",
+									"                url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\"),\r",
+									"                method: \"GET\",\r",
+									"                body: body == null ? \"\" : JSON.stringify(body),\r",
+									"                header: { \"Content-Type\": \"application/json\" }\r",
+									"            };\r",
+									"\r",
+									"pm.sendRequest(req, (error, response) => {\r",
+									"    if (error) throw new Error(error);\r",
+									"    pm.test(\"Количество дизлайков в ревью \" + response.json().id + \" должно быть равно 0\", function () {\r",
+									"        pm.expect(0).equal(response.json().dislikes);\r",
+									"    })\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Review-User-Id",
+								"value": "{{evaluatorId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/{{reviewId}}/dislike",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"{{reviewId}}",
+								"dislike"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Поставить лайк потом дизлайк отзыву",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const review = await api.addReview(rnd.getReview());\r",
+									"        pm.collectionVariables.set('evaluatorId', _.random(1001, 2000));\r",
+									"        pm.collectionVariables.set('authorId', review.authorId);\r",
+									"        pm.collectionVariables.set('reviewId', review.id);\r",
+									"\r",
+									"        let response\r",
+									"        let body\r",
+									"        const evaluator = pm.collectionVariables.get('evaluatorId') + '';\r",
+									"        const req = {\r",
+									"                url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/like\",\r",
+									"                method: \"PUT\",\r",
+									"                header: { \"Accept\": \"application/json\",\r",
+									"                \"Content-Type\": \"application/json\", \r",
+									"                \"X-Review-User-Id\": evaluator },\r",
+									"                body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                };\r",
+									"\r",
+									"        pm.sendRequest(req, (error, response) => {\r",
+									"            if (error) throw new Error(error);\r",
+									"        });\r",
+									"\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"let response\r",
+									"let body\r",
+									"const req = {\r",
+									"                url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\"),\r",
+									"                method: \"GET\",\r",
+									"                body: body == null ? \"\" : JSON.stringify(body),\r",
+									"                header: { \"Content-Type\": \"application/json\" }\r",
+									"            };\r",
+									"\r",
+									"pm.sendRequest(req, (error, response) => {\r",
+									"    if (error) throw new Error(error);\r",
+									"    pm.test(\"Количество лайков в ревью \" + response.json().id + \" должно быть равно 0\", function () {\r",
+									"        pm.expect(0).equal(response.json().likes);\r",
+									"    })\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Review-User-Id",
+								"value": "{{evaluatorId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/{{reviewId}}/dislike",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"{{reviewId}}",
+								"dislike"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Поставить дизлайк потом лайк отзыву",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const review = await api.addReview(rnd.getReview());\r",
+									"        pm.collectionVariables.set('evaluatorId', _.random(1001, 2000));\r",
+									"        pm.collectionVariables.set('authorId', review.authorId);\r",
+									"        pm.collectionVariables.set('reviewId', review.id);\r",
+									"\r",
+									"        let response\r",
+									"        let body\r",
+									"        const evaluator = pm.collectionVariables.get('evaluatorId') + '';\r",
+									"        const req = {\r",
+									"                url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/dislike\",\r",
+									"                method: \"PUT\",\r",
+									"                header: { \"Accept\": \"application/json\",\r",
+									"                \"Content-Type\": \"application/json\", \r",
+									"                \"X-Review-User-Id\": evaluator },\r",
+									"                body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                };\r",
+									"\r",
+									"        pm.sendRequest(req, (error, response) => {\r",
+									"            if (error) throw new Error(error);\r",
+									"        });\r",
+									"\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"let response\r",
+									"let body\r",
+									"const req = {\r",
+									"                url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\"),\r",
+									"                method: \"GET\",\r",
+									"                body: body == null ? \"\" : JSON.stringify(body),\r",
+									"                header: { \"Content-Type\": \"application/json\" }\r",
+									"            };\r",
+									"\r",
+									"pm.sendRequest(req, (error, response) => {\r",
+									"    if (error) throw new Error(error);\r",
+									"    pm.test(\"Количество дизлайков в ревью \" + response.json().id + \" должно быть равно 0\", function () {\r",
+									"        pm.expect(0).equal(response.json().dislikes);\r",
+									"    })\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Review-User-Id",
+								"value": "{{evaluatorId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/{{reviewId}}/like",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"{{reviewId}}",
+								"like"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Расчёт статистики",
+			"item": [
+				{
+					"name": "Оценка события по 3 из 3 отзывов",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const eventId = _.random(1001, 10000);\r",
+									"        let review = rnd.getReview();\r",
+									"        let review1 = rnd.getReview();\r",
+									"        let review2 = rnd.getReview();\r",
+									"        review.eventId = eventId;\r",
+									"        review1.eventId = eventId;\r",
+									"        review2.eventId = eventId;\r",
+									"        review.mark = 1;\r",
+									"        review1.mark = 2;\r",
+									"        review2.mark = 8;\r",
+									"        review = await api.addReview(review);\r",
+									"        review1 = await api.addReview(review1);\r",
+									"        review2 = await api.addReview(review2);\r",
+									"        pm.collectionVariables.set('reviewId', review2.id);\r",
+									"\r",
+									"        const sendRequest = (req) => {\r",
+									"            return new Promise((resolve, reject) => {\r",
+									"                pm.sendRequest(req, (err, res) => {\r",
+									"                    if (err) {\r",
+									"                        console.log(err);\r",
+									"                        return reject(err);\r",
+									"                    }\r",
+									"                    resolve(res);\r",
+									"                    setTimeout(2500);\r",
+									"                });\r",
+									"            });\r",
+									"        };\r",
+									"\r",
+									"        (async () => {\r",
+									"            for (let i = 10002; i <= 10022; i++) {\r",
+									"                let body\r",
+									"                const evaluator = i + '';\r",
+									"                let request = {\r",
+									"                    url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/like\",\r",
+									"                    method: \"PUT\",\r",
+									"                    header: { \"Accept\": \"application/json\",\r",
+									"                    \"Content-Type\": \"application/json\", \r",
+									"                    \"X-Review-User-Id\": evaluator },\r",
+									"                    body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                }\r",
+									"                const response = await sendRequest(request); // wait for promise to be resolved before continuing\r",
+									"                if (i < 10008) {\r",
+									"                    const evaluator1 = (i + 10000) + '';\r",
+									"                    let request1 = {\r",
+									"                        url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/dislike\",\r",
+									"                        method: \"PUT\",\r",
+									"                        header: { \"Accept\": \"application/json\",\r",
+									"                        \"Content-Type\": \"application/json\", \r",
+									"                        \"X-Review-User-Id\": evaluator1 },\r",
+									"                        body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                    }\r",
+									"                    const response1 = await sendRequest(request1);\r",
+									"                }\r",
+									"            }\r",
+									"        })();\r",
+									"\r",
+									"        pm.collectionVariables.set('eventAverageMark', 3.6);\r",
+									"        pm.collectionVariables.set('eventId', eventId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const eventAverageMark = pm.collectionVariables.get('eventAverageMark');\r",
+									"const eventId = pm.collectionVariables.get('eventId');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Ответ должен содержать поля: eventId, averageMark\", function () {\r",
+									"    pm.expect(target).to.have.property('eventId');\r",
+									"    pm.expect(target).to.have.property('averageMark');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данных ответа должны соответствовать ожидаемым\", function () {\r",
+									"    pm.expect(eventId).equals(target.eventId);\r",
+									"    pm.expect(eventAverageMark.toString()).equals(target.averageMark.toString());\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/analytics/average-mark/event/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"analytics",
+								"average-mark",
+								"event",
+								"{{eventId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Оценка события по 2 из 3 отзывов",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const eventId = _.random(1001, 10000);\r",
+									"        let review = rnd.getReview();\r",
+									"        let review1 = rnd.getReview();\r",
+									"        let review2 = rnd.getReview();\r",
+									"        review.eventId = eventId;\r",
+									"        review1.eventId = eventId;\r",
+									"        review2.eventId = eventId;\r",
+									"        review.mark = 1;\r",
+									"        review1.mark = 2;\r",
+									"        review2.mark = 8;\r",
+									"        review2.likes = 4;\r",
+									"        review2.dislikes = 8;\r",
+									"        review = await api.addReview(review);\r",
+									"        review1 = await api.addReview(review1);\r",
+									"        review2 = await api.addReview(review2);\r",
+									"        pm.collectionVariables.set('reviewId', review2.id);\r",
+									"\r",
+									"        const sendRequest = (req) => {\r",
+									"            return new Promise((resolve, reject) => {\r",
+									"                pm.sendRequest(req, (err, res) => {\r",
+									"                    if (err) {\r",
+									"                        console.log(err);\r",
+									"                        return reject(err);\r",
+									"                    }\r",
+									"                    resolve(res);\r",
+									"                    setTimeout(2500);\r",
+									"                });\r",
+									"            });\r",
+									"        };\r",
+									"\r",
+									"        (async () => {\r",
+									"            for (let i = 10002; i <= 10022; i++) {\r",
+									"                let body\r",
+									"                const evaluator = i + '';\r",
+									"                let request = {\r",
+									"                    url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/dislike\",\r",
+									"                    method: \"PUT\",\r",
+									"                    header: { \"Accept\": \"application/json\",\r",
+									"                    \"Content-Type\": \"application/json\", \r",
+									"                    \"X-Review-User-Id\": evaluator },\r",
+									"                    body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                }\r",
+									"                const response = await sendRequest(request); // wait for promise to be resolved before continuing\r",
+									"                if (i < 10008) {\r",
+									"                    const evaluator1 = (i + 10000) + '';\r",
+									"                    let request1 = {\r",
+									"                        url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/like\",\r",
+									"                        method: \"PUT\",\r",
+									"                        header: { \"Accept\": \"application/json\",\r",
+									"                        \"Content-Type\": \"application/json\", \r",
+									"                        \"X-Review-User-Id\": evaluator1 },\r",
+									"                        body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                    }\r",
+									"                    const response1 = await sendRequest(request1);\r",
+									"                }\r",
+									"            }\r",
+									"        })();\r",
+									"\r",
+									"        pm.collectionVariables.set('eventAverageMark', 1.5);\r",
+									"        pm.collectionVariables.set('eventId', eventId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const eventAverageMark = pm.collectionVariables.get('eventAverageMark');\r",
+									"const eventId = pm.collectionVariables.get('eventId');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Ответ должен содержать поля: eventId, averageMark\", function () {\r",
+									"    pm.expect(target).to.have.property('eventId');\r",
+									"    pm.expect(target).to.have.property('averageMark');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данных ответа должны соответствовать ожидаемым\", function () {\r",
+									"    pm.expect(eventId).equals(target.eventId);\r",
+									"    pm.expect(eventAverageMark.toString()).equals(target.averageMark.toString());\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/analytics/average-mark/event/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"analytics",
+								"average-mark",
+								"event",
+								"{{eventId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Оценка события null, если отзывы нельзя включать в расчёт",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const eventId = _.random(1001, 10000);\r",
+									"        let review = rnd.getReview();\r",
+									"        let review1 = rnd.getReview();\r",
+									"        let review2 = rnd.getReview();\r",
+									"        review.eventId = eventId;\r",
+									"        review1.eventId = eventId;\r",
+									"        review2.eventId = eventId;\r",
+									"        review.mark = 1;\r",
+									"        review1.mark = 2;\r",
+									"        review2.mark = 8;\r",
+									"        review = await api.addReview(review);\r",
+									"        review1 = await api.addReview(review1);\r",
+									"        review2 = await api.addReview(review2);\r",
+									"        pm.collectionVariables.set('reviewId', review.id);\r",
+									"        pm.collectionVariables.set('reviewId1', review1.id);\r",
+									"        pm.collectionVariables.set('reviewId2', review2.id);\r",
+									"\r",
+									"        const sendRequest = (req) => {\r",
+									"            return new Promise((resolve, reject) => {\r",
+									"                pm.sendRequest(req, (err, res) => {\r",
+									"                    if (err) {\r",
+									"                        console.log(err);\r",
+									"                        return reject(err);\r",
+									"                    }\r",
+									"                    resolve(res);\r",
+									"                    setTimeout(2500);\r",
+									"                });\r",
+									"            });\r",
+									"        };\r",
+									"\r",
+									"        (async () => {\r",
+									"            for (let i = 10002; i <= 10022; i++) {\r",
+									"                let body\r",
+									"                const evaluator = i + '';\r",
+									"                let request = {\r",
+									"                    url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/dislike\",\r",
+									"                    method: \"PUT\",\r",
+									"                    header: { \"Accept\": \"application/json\",\r",
+									"                    \"Content-Type\": \"application/json\", \r",
+									"                    \"X-Review-User-Id\": evaluator },\r",
+									"                    body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                }\r",
+									"                const response = await sendRequest(request); // wait for promise to be resolved before continuing\r",
+									"                let request1 = {\r",
+									"                    url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId1\") + \"/dislike\",\r",
+									"                    method: \"PUT\",\r",
+									"                    header: { \"Accept\": \"application/json\",\r",
+									"                    \"Content-Type\": \"application/json\", \r",
+									"                    \"X-Review-User-Id\": evaluator },\r",
+									"                    body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                }\r",
+									"                const response1 = await sendRequest(request1);\r",
+									"                let request2 = {\r",
+									"                    url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId2\") + \"/dislike\",\r",
+									"                    method: \"PUT\",\r",
+									"                    header: { \"Accept\": \"application/json\",\r",
+									"                    \"Content-Type\": \"application/json\", \r",
+									"                    \"X-Review-User-Id\": evaluator },\r",
+									"                    body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                }\r",
+									"                const response2 = await sendRequest(request2);\r",
+									"            }\r",
+									"        })();\r",
+									"        \r",
+									"        pm.collectionVariables.set('eventId', eventId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const eventAverageMark = pm.collectionVariables.get('eventAverageMark');\r",
+									"const eventId = pm.collectionVariables.get('eventId');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Ответ должен содержать поля: eventId, averageMark\", function () {\r",
+									"    pm.expect(target).to.have.property('eventId');\r",
+									"    pm.expect(target).to.have.property('averageMark');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данных ответа должны соответствовать ожидаемым\", function () {\r",
+									"    pm.expect(eventId).equals(target.eventId);\r",
+									"    pm.expect(target.averageMark).to.be.null;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/analytics/average-mark/event/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"analytics",
+								"average-mark",
+								"event",
+								"{{eventId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Оценка автора по 4 из 4 отзывов",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const authorId = _.random(1001, 10000);\r",
+									"        let review = rnd.getReview();\r",
+									"        let review1 = rnd.getReview();\r",
+									"        let review2 = rnd.getReview();\r",
+									"        let review3 = rnd.getReview();\r",
+									"        review.authorId = authorId;\r",
+									"        review1.authorId = authorId;\r",
+									"        review2.authorId = authorId;\r",
+									"        review3.authorId = authorId;\r",
+									"        review.mark = 1;\r",
+									"        review1.mark = 3;\r",
+									"        review2.mark = 9;\r",
+									"        review3.mark = 10;\r",
+									"        review = await api.addReview(review);\r",
+									"        review1 = await api.addReview(review1);\r",
+									"        review2 = await api.addReview(review2);\r",
+									"        review3 = await api.addReview(review3);\r",
+									"        pm.collectionVariables.set('authorId', review2.authorId);\r",
+									"        pm.collectionVariables.set('reviewId', review3.id);\r",
+									"\r",
+									"        const sendRequest = (req) => {\r",
+									"            return new Promise((resolve, reject) => {\r",
+									"                pm.sendRequest(req, (err, res) => {\r",
+									"                    if (err) {\r",
+									"                        console.log(err);\r",
+									"                        return reject(err);\r",
+									"                    }\r",
+									"                    resolve(res);\r",
+									"                    setTimeout(2500);\r",
+									"                });\r",
+									"            });\r",
+									"        };\r",
+									"\r",
+									"        (async () => {\r",
+									"            for (let i = 10002; i <= 10022; i++) {\r",
+									"                let body\r",
+									"                const evaluator = i + '';\r",
+									"                let request = {\r",
+									"                    url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/like\",\r",
+									"                    method: \"PUT\",\r",
+									"                    header: { \"Accept\": \"application/json\",\r",
+									"                    \"Content-Type\": \"application/json\", \r",
+									"                    \"X-Review-User-Id\": evaluator },\r",
+									"                    body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                }\r",
+									"                const response = await sendRequest(request); // wait for promise to be resolved before continuing\r",
+									"                if (i < 10008) {\r",
+									"                    const evaluator1 = (i + 10000) + '';\r",
+									"                    let request1 = {\r",
+									"                        url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/dislike\",\r",
+									"                        method: \"PUT\",\r",
+									"                        header: { \"Accept\": \"application/json\",\r",
+									"                        \"Content-Type\": \"application/json\", \r",
+									"                        \"X-Review-User-Id\": evaluator1 },\r",
+									"                        body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                    }\r",
+									"                    const response1 = await sendRequest(request1);\r",
+									"                }\r",
+									"            }\r",
+									"        })();\r",
+									"\r",
+									"        pm.collectionVariables.set('authorAverageMark', 5.7);\r",
+									"        pm.collectionVariables.set('authorId', authorId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const authorAverageMark = pm.collectionVariables.get('authorAverageMark');\r",
+									"const authorId = pm.collectionVariables.get('authorId');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Ответ должен содержать поля: authorId, averageMark\", function () {\r",
+									"    pm.expect(target).to.have.property('authorId');\r",
+									"    pm.expect(target).to.have.property('averageMark');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данных ответа должны соответствовать ожидаемым\", function () {\r",
+									"    pm.expect(authorId).equals(target.authorId);\r",
+									"    pm.expect(authorAverageMark.toString()).equals(target.averageMark.toString());\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/analytics/average-mark/author/{{authorId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"analytics",
+								"average-mark",
+								"author",
+								"{{authorId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Оценка автора по 3 из 4 отзывов",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const authorId = _.random(1001, 10000);\r",
+									"        let review = rnd.getReview();\r",
+									"        let review1 = rnd.getReview();\r",
+									"        let review2 = rnd.getReview();\r",
+									"        let review3 = rnd.getReview();\r",
+									"        review.authorId = authorId;\r",
+									"        review1.authorId = authorId;\r",
+									"        review2.authorId = authorId;\r",
+									"        review3.authorId = authorId;\r",
+									"        review.mark = 1;\r",
+									"        review1.mark = 3;\r",
+									"        review2.mark = 9;\r",
+									"        review3.mark = 10;\r",
+									"        review = await api.addReview(review);\r",
+									"        review1 = await api.addReview(review1);\r",
+									"        review2 = await api.addReview(review2);\r",
+									"        review3 = await api.addReview(review3);\r",
+									"        pm.collectionVariables.set('authorId', review2.authorId);\r",
+									"        pm.collectionVariables.set('reviewId', review3.id);\r",
+									"\r",
+									"        const sendRequest = (req) => {\r",
+									"            return new Promise((resolve, reject) => {\r",
+									"                pm.sendRequest(req, (err, res) => {\r",
+									"                    if (err) {\r",
+									"                        console.log(err);\r",
+									"                        return reject(err);\r",
+									"                    }\r",
+									"                    resolve(res);\r",
+									"                    setTimeout(2500);\r",
+									"                });\r",
+									"            });\r",
+									"        };\r",
+									"\r",
+									"        (async () => {\r",
+									"            for (let i = 10002; i <= 10022; i++) {\r",
+									"                let body\r",
+									"                const evaluator = i + '';\r",
+									"                let request = {\r",
+									"                    url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/dislike\",\r",
+									"                    method: \"PUT\",\r",
+									"                    header: { \"Accept\": \"application/json\",\r",
+									"                    \"Content-Type\": \"application/json\", \r",
+									"                    \"X-Review-User-Id\": evaluator },\r",
+									"                    body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                }\r",
+									"                const response = await sendRequest(request); // wait for promise to be resolved before continuing\r",
+									"                if (i < 10008) {\r",
+									"                    const evaluator1 = (i + 10000) + '';\r",
+									"                    let request1 = {\r",
+									"                        url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/like\",\r",
+									"                        method: \"PUT\",\r",
+									"                        header: { \"Accept\": \"application/json\",\r",
+									"                        \"Content-Type\": \"application/json\", \r",
+									"                        \"X-Review-User-Id\": evaluator1 },\r",
+									"                        body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                    }\r",
+									"                    const response1 = await sendRequest(request1);\r",
+									"                }\r",
+									"            }\r",
+									"        })();\r",
+									"\r",
+									"        pm.collectionVariables.set('authorAverageMark', 4.3);\r",
+									"        pm.collectionVariables.set('authorId', authorId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const authorAverageMark = pm.collectionVariables.get('authorAverageMark');\r",
+									"const authorId = pm.collectionVariables.get('authorId');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Ответ должен содержать поля: authorId, averageMark\", function () {\r",
+									"    pm.expect(target).to.have.property('authorId');\r",
+									"    pm.expect(target).to.have.property('averageMark');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данных ответа должны соответствовать ожидаемым\", function () {\r",
+									"    pm.expect(authorId).equals(target.authorId);\r",
+									"    pm.expect(authorAverageMark.toString()).equals(target.averageMark.toString());\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/analytics/average-mark/author/{{authorId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"analytics",
+								"average-mark",
+								"author",
+								"{{authorId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Оценка автора null, если отзывы нельзя включать в расчёт",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const authorId = _.random(1001, 10000);\r",
+									"        let review = rnd.getReview();\r",
+									"        let review1 = rnd.getReview();\r",
+									"        let review2 = rnd.getReview();\r",
+									"        let review3 = rnd.getReview();\r",
+									"        review.authorId = authorId;\r",
+									"        review1.authorId = authorId;\r",
+									"        review2.authorId = authorId;\r",
+									"        review3.authorId = authorId;\r",
+									"        review.mark = 1;\r",
+									"        review1.mark = 3;\r",
+									"        review2.mark = 9;\r",
+									"        review3.mark = 10;\r",
+									"        review = await api.addReview(review);\r",
+									"        review1 = await api.addReview(review1);\r",
+									"        review2 = await api.addReview(review2);\r",
+									"        review3 = await api.addReview(review3);\r",
+									"        pm.collectionVariables.set('authorId', review2.authorId);\r",
+									"        pm.collectionVariables.set('reviewId', review.id);\r",
+									"        pm.collectionVariables.set('reviewId1', review1.id);\r",
+									"        pm.collectionVariables.set('reviewId2', review2.id);\r",
+									"        pm.collectionVariables.set('reviewId3', review3.id);\r",
+									"\r",
+									"        const sendRequest = (req) => {\r",
+									"            return new Promise((resolve, reject) => {\r",
+									"                pm.sendRequest(req, (err, res) => {\r",
+									"                    if (err) {\r",
+									"                        console.log(err);\r",
+									"                        return reject(err);\r",
+									"                    }\r",
+									"                    resolve(res);\r",
+									"                    setTimeout(2500);\r",
+									"                });\r",
+									"            });\r",
+									"        };\r",
+									"\r",
+									"        (async () => {\r",
+									"            for (let i = 10002; i <= 10022; i++) {\r",
+									"                let body\r",
+									"                const evaluator = i + '';\r",
+									"                let request = {\r",
+									"                    url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/dislike\",\r",
+									"                    method: \"PUT\",\r",
+									"                    header: { \"Accept\": \"application/json\",\r",
+									"                    \"Content-Type\": \"application/json\", \r",
+									"                    \"X-Review-User-Id\": evaluator },\r",
+									"                    body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                }\r",
+									"                const response = await sendRequest(request); // wait for promise to be resolved before continuing\r",
+									"                let request1 = {\r",
+									"                    url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId1\") + \"/dislike\",\r",
+									"                    method: \"PUT\",\r",
+									"                    header: { \"Accept\": \"application/json\",\r",
+									"                    \"Content-Type\": \"application/json\", \r",
+									"                    \"X-Review-User-Id\": evaluator },\r",
+									"                    body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                }\r",
+									"                const response1 = await sendRequest(request1);\r",
+									"                let request2 = {\r",
+									"                    url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId2\") + \"/dislike\",\r",
+									"                    method: \"PUT\",\r",
+									"                    header: { \"Accept\": \"application/json\",\r",
+									"                    \"Content-Type\": \"application/json\", \r",
+									"                    \"X-Review-User-Id\": evaluator },\r",
+									"                    body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                }\r",
+									"                const response2 = await sendRequest(request2);\r",
+									"                let request3 = {\r",
+									"                    url: \"http://localhost:8090/reviews/\" + pm.collectionVariables.get(\"reviewId3\") + \"/dislike\",\r",
+									"                    method: \"PUT\",\r",
+									"                    header: { \"Accept\": \"application/json\",\r",
+									"                    \"Content-Type\": \"application/json\", \r",
+									"                    \"X-Review-User-Id\": evaluator },\r",
+									"                    body: body == null ? \"\" : JSON.stringify(body)\r",
+									"                }\r",
+									"                const response3 = await sendRequest(request3);\r",
+									"            }\r",
+									"        })();\r",
+									"        \r",
+									"        pm.collectionVariables.set('authorId', authorId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const authorAverageMark = pm.collectionVariables.get('authorAverageMark');\r",
+									"const authorId = pm.collectionVariables.get('authorId');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Ответ должен содержать поля: authorId, averageMark\", function () {\r",
+									"    pm.expect(target).to.have.property('authorId');\r",
+									"    pm.expect(target).to.have.property('averageMark');\r",
+									"\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данных ответа должны соответствовать ожидаемым\", function () {\r",
+									"    pm.expect(authorId).equals(target.authorId);\r",
+									"    pm.expect(target.averageMark).to.be.null;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/analytics/average-mark/author/{{authorId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"analytics",
+								"average-mark",
+								"author",
+								"{{authorId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Статистика по событию при 1 позитивном отзыве",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const eventId = _.random(1001, 10000);\r",
+									"        let review = rnd.getReview();\r",
+									"        review.eventId = eventId;\r",
+									"        review.mark = 10;\r",
+									"        review = await api.addReview(review);\r",
+									"        pm.collectionVariables.set('eventId', review.eventId);\r",
+									"\r",
+									"        pm.collectionVariables.set('positiveReviewsPercent', 100.0);\r",
+									"        pm.collectionVariables.set('negativeReviewsPercent', 0.0);\r",
+									"        pm.collectionVariables.set('numberOfReviews', 1);\r",
+									"        pm.collectionVariables.set('eventId', eventId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const positiveReviewsPercent = pm.collectionVariables.get('positiveReviewsPercent');\r",
+									"const negativeReviewsPercent = pm.collectionVariables.get('negativeReviewsPercent');\r",
+									"const numberOfReviews = pm.collectionVariables.get('numberOfReviews');\r",
+									"const eventId = pm.collectionVariables.get('eventId');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Ответ должен содержать поля: eventId, numberOfReviews, positiveReviewsPercent, negativeReviewsPercent\", function () {\r",
+									"    pm.expect(target).to.have.property('eventId');\r",
+									"    pm.expect(target).to.have.property('numberOfReviews');\r",
+									"    pm.expect(target).to.have.property('positiveReviewsPercent');\r",
+									"    pm.expect(target).to.have.property('negativeReviewsPercent');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данных ответа должны соответствовать ожидаемым\", function () {\r",
+									"    pm.expect(eventId).equals(target.eventId);\r",
+									"    pm.expect(numberOfReviews.toString()).equals(target.numberOfReviews.toString());\r",
+									"    pm.expect(positiveReviewsPercent.toString()).equals(target.positiveReviewsPercent.toString());\r",
+									"    pm.expect(negativeReviewsPercent.toString()).equals(target.negativeReviewsPercent.toString());\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/analytics/indicators/event/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"analytics",
+								"indicators",
+								"event",
+								"{{eventId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Статистика по событию при 1 негативном отзыве",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const eventId = _.random(1001, 10000);\r",
+									"        let review = rnd.getReview();\r",
+									"        review.eventId = eventId;\r",
+									"        review.mark = 1;\r",
+									"        review = await api.addReview(review);\r",
+									"        pm.collectionVariables.set('eventId', review.eventId);\r",
+									"\r",
+									"        pm.collectionVariables.set('positiveReviewsPercent', 0.0);\r",
+									"        pm.collectionVariables.set('negativeReviewsPercent', 100.0);\r",
+									"        pm.collectionVariables.set('numberOfReviews', 1);\r",
+									"        pm.collectionVariables.set('eventId', eventId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const positiveReviewsPercent = pm.collectionVariables.get('positiveReviewsPercent');\r",
+									"const negativeReviewsPercent = pm.collectionVariables.get('negativeReviewsPercent');\r",
+									"const numberOfReviews = pm.collectionVariables.get('numberOfReviews');\r",
+									"const eventId = pm.collectionVariables.get('eventId');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Ответ должен содержать поля: eventId, numberOfReviews, positiveReviewsPercent, negativeReviewsPercent\", function () {\r",
+									"    pm.expect(target).to.have.property('eventId');\r",
+									"    pm.expect(target).to.have.property('numberOfReviews');\r",
+									"    pm.expect(target).to.have.property('positiveReviewsPercent');\r",
+									"    pm.expect(target).to.have.property('negativeReviewsPercent');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данных ответа должны соответствовать ожидаемым\", function () {\r",
+									"    pm.expect(eventId).equals(target.eventId);\r",
+									"    pm.expect(numberOfReviews.toString()).equals(target.numberOfReviews.toString());\r",
+									"    pm.expect(positiveReviewsPercent.toString()).equals(target.positiveReviewsPercent.toString());\r",
+									"    pm.expect(negativeReviewsPercent.toString()).equals(target.negativeReviewsPercent.toString());\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/analytics/indicators/event/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"analytics",
+								"indicators",
+								"event",
+								"{{eventId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Статистика по событию при отсутствии отзывов",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const eventId = _.random(1001, 10000);\r",
+									"\r",
+									"        pm.collectionVariables.set('eventId', eventId);\r",
+									"        \r",
+									"        pm.collectionVariables.set('eventId', eventId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const positiveReviewsPercent = pm.collectionVariables.get('positiveReviewsPercent');\r",
+									"const negativeReviewsPercent = pm.collectionVariables.get('negativeReviewsPercent');\r",
+									"const numberOfReviews = pm.collectionVariables.get('numberOfReviews');\r",
+									"const eventId = pm.collectionVariables.get('eventId');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Ответ должен содержать поля: eventId, numberOfReviews, positiveReviewsPercent, negativeReviewsPercent\", function () {\r",
+									"    pm.expect(target).to.have.property('eventId');\r",
+									"    pm.expect(target).to.have.property('numberOfReviews');\r",
+									"    pm.expect(target).to.have.property('positiveReviewsPercent');\r",
+									"    pm.expect(target).to.have.property('negativeReviewsPercent');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данных ответа должны соответствовать ожидаемым\", function () {\r",
+									"    pm.expect(eventId).equals(target.eventId);\r",
+									"    pm.expect(target.numberOfReviews).to.be.null;\r",
+									"    pm.expect(target.positiveReviewsPercent).to.be.null;\r",
+									"    pm.expect(target.negativeReviewsPercent).to.be.null;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/analytics/indicators/event/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"analytics",
+								"indicators",
+								"event",
+								"{{eventId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Статистика по событию при 2 хороших и 1 плохом отзыве",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const eventId = _.random(1001, 10000);\r",
+									"        let review = rnd.getReview();\r",
+									"        let review1 = rnd.getReview();\r",
+									"        let review2 = rnd.getReview();\r",
+									"        review.eventId = eventId;\r",
+									"        review1.eventId = eventId;\r",
+									"        review2.eventId = eventId;\r",
+									"        review.mark = 1;\r",
+									"        review1.mark = 7;\r",
+									"        review2.mark = 8;\r",
+									"        review = await api.addReview(review);\r",
+									"        review1 = await api.addReview(review1);\r",
+									"        review2 = await api.addReview(review2);\r",
+									"        pm.collectionVariables.set('eventId', review.eventId);\r",
+									"\r",
+									"        pm.collectionVariables.set('positiveReviewsPercent', 66.6);\r",
+									"        pm.collectionVariables.set('negativeReviewsPercent', 33.3);\r",
+									"        pm.collectionVariables.set('numberOfReviews', 3);\r",
+									"        pm.collectionVariables.set('eventId', eventId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const positiveReviewsPercent = pm.collectionVariables.get('positiveReviewsPercent');\r",
+									"const negativeReviewsPercent = pm.collectionVariables.get('negativeReviewsPercent');\r",
+									"const numberOfReviews = pm.collectionVariables.get('numberOfReviews');\r",
+									"const eventId = pm.collectionVariables.get('eventId');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Ответ должен содержать поля: eventId, numberOfReviews, positiveReviewsPercent, negativeReviewsPercent\", function () {\r",
+									"    pm.expect(target).to.have.property('eventId');\r",
+									"    pm.expect(target).to.have.property('numberOfReviews');\r",
+									"    pm.expect(target).to.have.property('positiveReviewsPercent');\r",
+									"    pm.expect(target).to.have.property('negativeReviewsPercent');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данных ответа должны соответствовать ожидаемым\", function () {\r",
+									"    pm.expect(eventId).equals(target.eventId);\r",
+									"    pm.expect(numberOfReviews.toString()).equals(target.numberOfReviews.toString());\r",
+									"    pm.expect(positiveReviewsPercent.toString()).equals(target.positiveReviewsPercent.toString());\r",
+									"    pm.expect(negativeReviewsPercent.toString()).equals(target.negativeReviewsPercent.toString());\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/analytics/indicators/event/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"analytics",
+								"indicators",
+								"event",
+								"{{eventId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Статистика по событию при 1 хорошем и 2 плохих отзывах",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const eventId = _.random(1001, 10000);\r",
+									"        let review = rnd.getReview();\r",
+									"        let review1 = rnd.getReview();\r",
+									"        let review2 = rnd.getReview();\r",
+									"        review.eventId = eventId;\r",
+									"        review1.eventId = eventId;\r",
+									"        review2.eventId = eventId;\r",
+									"        review.mark = 1;\r",
+									"        review1.mark = 2;\r",
+									"        review2.mark = 8;\r",
+									"        review = await api.addReview(review);\r",
+									"        review1 = await api.addReview(review1);\r",
+									"        review2 = await api.addReview(review2);\r",
+									"        pm.collectionVariables.set('eventId', review.eventId);\r",
+									"\r",
+									"        pm.collectionVariables.set('positiveReviewsPercent', 33.3);\r",
+									"        pm.collectionVariables.set('negativeReviewsPercent', 66.6);\r",
+									"        pm.collectionVariables.set('numberOfReviews', 3);\r",
+									"        pm.collectionVariables.set('eventId', eventId);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const positiveReviewsPercent = pm.collectionVariables.get('positiveReviewsPercent');\r",
+									"const negativeReviewsPercent = pm.collectionVariables.get('negativeReviewsPercent');\r",
+									"const numberOfReviews = pm.collectionVariables.get('numberOfReviews');\r",
+									"const eventId = pm.collectionVariables.get('eventId');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Ответ должен содержать поля: eventId, numberOfReviews, positiveReviewsPercent, negativeReviewsPercent\", function () {\r",
+									"    pm.expect(target).to.have.property('eventId');\r",
+									"    pm.expect(target).to.have.property('numberOfReviews');\r",
+									"    pm.expect(target).to.have.property('positiveReviewsPercent');\r",
+									"    pm.expect(target).to.have.property('negativeReviewsPercent');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данных ответа должны соответствовать ожидаемым\", function () {\r",
+									"    pm.expect(eventId).equals(target.eventId);\r",
+									"    pm.expect(numberOfReviews.toString()).equals(target.numberOfReviews.toString());\r",
+									"    pm.expect(positiveReviewsPercent.toString()).equals(target.positiveReviewsPercent.toString());\r",
+									"    pm.expect(negativeReviewsPercent.toString()).equals(target.negativeReviewsPercent.toString());\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/analytics/indicators/event/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"analytics",
+								"indicators",
+								"event",
+								"{{eventId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Списки хороших/плохих отзывов по событию (в базе 4 + / 1 - )",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const eventId = _.random(1001, 10000);\r",
+									"        let review = rnd.getReview();\r",
+									"        let review1 = rnd.getReview();\r",
+									"        let review2 = rnd.getReview();\r",
+									"        let review3 = rnd.getReview();\r",
+									"        let review4 = rnd.getReview();\r",
+									"        review.eventId = eventId;\r",
+									"        review1.eventId = eventId;\r",
+									"        review2.eventId = eventId;\r",
+									"        review3.eventId = eventId;\r",
+									"        review4.eventId = eventId;\r",
+									"        review.mark = 1;\r",
+									"        review1.mark = 7;\r",
+									"        review2.mark = 8;\r",
+									"        review3.mark = 6;\r",
+									"        review4.mark = 9;\r",
+									"        review = await api.addReview(review);\r",
+									"        review1 = await api.addReview(review1);\r",
+									"        review2 = await api.addReview(review2);\r",
+									"        review3 = await api.addReview(review3);\r",
+									"        review4 = await api.addReview(review4);\r",
+									"        pm.collectionVariables.set('eventId', eventId);\r",
+									"        pm.collectionVariables.set('lengthBestReviews', 3);\r",
+									"        pm.collectionVariables.set('lengthWorstReviews', 1);\r",
+									"        pm.collectionVariables.set('reviewId', review.id);\r",
+									"        pm.collectionVariables.set('reviewId1', review1.id);\r",
+									"        pm.collectionVariables.set('reviewId2', review2.id);\r",
+									"        pm.collectionVariables.set('reviewId3', review3.id);\r",
+									"        pm.collectionVariables.set('reviewId4', review4.id);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const eventId = pm.collectionVariables.get('eventId');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Ответ должен содержать поля: eventId, bestReviews, worstReviews\", function () {\r",
+									"    pm.expect(target).to.have.property('eventId');\r",
+									"    pm.expect(target).to.have.property('bestReviews');\r",
+									"    pm.expect(target).to.have.property('worstReviews');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данных ответа должны соответствовать ожидаемым\", function () {\r",
+									"    pm.expect(eventId).equals(target.eventId);\r",
+									"    pm.expect(pm.collectionVariables.get('lengthBestReviews').toString()).equals(target.bestReviews.length.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('lengthWorstReviews').toString()).equals(target.worstReviews.length.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('reviewId4').toString()).equals(target.bestReviews[0].id.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('reviewId2').toString()).equals(target.bestReviews[1].id.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('reviewId1').toString()).equals(target.bestReviews[2].id.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('reviewId').toString()).equals(target.worstReviews[0].id.toString());\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/analytics/best-and-worst/event/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"analytics",
+								"best-and-worst",
+								"event",
+								"{{eventId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Списки хороших/плохих отзывов по событию (в базе 4 + / 0 - )",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const eventId = _.random(1001, 10000);\r",
+									"        let review1 = rnd.getReview();\r",
+									"        let review2 = rnd.getReview();\r",
+									"        let review3 = rnd.getReview();\r",
+									"        let review4 = rnd.getReview();\r",
+									"        review1.eventId = eventId;\r",
+									"        review2.eventId = eventId;\r",
+									"        review3.eventId = eventId;\r",
+									"        review4.eventId = eventId;\r",
+									"        review1.mark = 7;\r",
+									"        review2.mark = 8;\r",
+									"        review3.mark = 6;\r",
+									"        review4.mark = 9;\r",
+									"        review1 = await api.addReview(review1);\r",
+									"        review2 = await api.addReview(review2);\r",
+									"        review3 = await api.addReview(review3);\r",
+									"        review4 = await api.addReview(review4);\r",
+									"        pm.collectionVariables.set('eventId', eventId);\r",
+									"        pm.collectionVariables.set('lengthBestReviews', 3);\r",
+									"        pm.collectionVariables.set('lengthWorstReviews', 0);\r",
+									"        pm.collectionVariables.set('reviewId1', review1.id);\r",
+									"        pm.collectionVariables.set('reviewId2', review2.id);\r",
+									"        pm.collectionVariables.set('reviewId3', review3.id);\r",
+									"        pm.collectionVariables.set('reviewId4', review4.id);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const eventId = pm.collectionVariables.get('eventId');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Ответ должен содержать поля: eventId, bestReviews, worstReviews\", function () {\r",
+									"    pm.expect(target).to.have.property('eventId');\r",
+									"    pm.expect(target).to.have.property('bestReviews');\r",
+									"    pm.expect(target).to.have.property('worstReviews');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данных ответа должны соответствовать ожидаемым\", function () {\r",
+									"    pm.expect(eventId).equals(target.eventId);\r",
+									"    pm.expect(pm.collectionVariables.get('lengthBestReviews').toString()).equals(target.bestReviews.length.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('lengthWorstReviews').toString()).equals(target.worstReviews.length.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('reviewId4').toString()).equals(target.bestReviews[0].id.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('reviewId2').toString()).equals(target.bestReviews[1].id.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('reviewId1').toString()).equals(target.bestReviews[2].id.toString());\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/analytics/best-and-worst/event/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"analytics",
+								"best-and-worst",
+								"event",
+								"{{eventId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Списки хороших/плохих отзывов по событию (в базе 4 - / 1 + )",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const eventId = _.random(1001, 10000);\r",
+									"        let review = rnd.getReview();\r",
+									"        let review1 = rnd.getReview();\r",
+									"        let review2 = rnd.getReview();\r",
+									"        let review3 = rnd.getReview();\r",
+									"        let review4 = rnd.getReview();\r",
+									"        review.eventId = eventId;\r",
+									"        review1.eventId = eventId;\r",
+									"        review2.eventId = eventId;\r",
+									"        review3.eventId = eventId;\r",
+									"        review4.eventId = eventId;\r",
+									"        review.mark = 5;\r",
+									"        review1.mark = 3;\r",
+									"        review2.mark = 1;\r",
+									"        review3.mark = 2;\r",
+									"        review4.mark = 9;\r",
+									"        review = await api.addReview(review);\r",
+									"        review1 = await api.addReview(review1);\r",
+									"        review2 = await api.addReview(review2);\r",
+									"        review3 = await api.addReview(review3);\r",
+									"        review4 = await api.addReview(review4);\r",
+									"        pm.collectionVariables.set('eventId', eventId);\r",
+									"        pm.collectionVariables.set('lengthBestReviews', 1);\r",
+									"        pm.collectionVariables.set('lengthWorstReviews', 3);\r",
+									"        pm.collectionVariables.set('reviewId', review.id);\r",
+									"        pm.collectionVariables.set('reviewId1', review1.id);\r",
+									"        pm.collectionVariables.set('reviewId2', review2.id);\r",
+									"        pm.collectionVariables.set('reviewId3', review3.id);\r",
+									"        pm.collectionVariables.set('reviewId4', review4.id);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const eventId = pm.collectionVariables.get('eventId');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Ответ должен содержать поля: eventId, bestReviews, worstReviews\", function () {\r",
+									"    pm.expect(target).to.have.property('eventId');\r",
+									"    pm.expect(target).to.have.property('bestReviews');\r",
+									"    pm.expect(target).to.have.property('worstReviews');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данных ответа должны соответствовать ожидаемым\", function () {\r",
+									"    pm.expect(eventId).equals(target.eventId);\r",
+									"    pm.expect(pm.collectionVariables.get('lengthBestReviews').toString()).equals(target.bestReviews.length.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('lengthWorstReviews').toString()).equals(target.worstReviews.length.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('reviewId4').toString()).equals(target.bestReviews[0].id.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('reviewId2').toString()).equals(target.worstReviews[0].id.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('reviewId3').toString()).equals(target.worstReviews[1].id.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('reviewId1').toString()).equals(target.worstReviews[2].id.toString());\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/analytics/best-and-worst/event/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"analytics",
+								"best-and-worst",
+								"event",
+								"{{eventId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Списки хороших/плохих отзывов по событию (в базе 4 - / 0 + )",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const eventId = _.random(1001, 10000);\r",
+									"        let review = rnd.getReview();\r",
+									"        let review1 = rnd.getReview();\r",
+									"        let review2 = rnd.getReview();\r",
+									"        let review3 = rnd.getReview();\r",
+									"        review.eventId = eventId;\r",
+									"        review1.eventId = eventId;\r",
+									"        review2.eventId = eventId;\r",
+									"        review3.eventId = eventId;\r",
+									"        review.mark = 5;\r",
+									"        review1.mark = 3;\r",
+									"        review2.mark = 1;\r",
+									"        review3.mark = 2;\r",
+									"        review = await api.addReview(review);\r",
+									"        review1 = await api.addReview(review1);\r",
+									"        review2 = await api.addReview(review2);\r",
+									"        review3 = await api.addReview(review3);\r",
+									"        pm.collectionVariables.set('eventId', eventId);\r",
+									"        pm.collectionVariables.set('lengthBestReviews', 0);\r",
+									"        pm.collectionVariables.set('lengthWorstReviews', 3);\r",
+									"        pm.collectionVariables.set('reviewId', review.id);\r",
+									"        pm.collectionVariables.set('reviewId1', review1.id);\r",
+									"        pm.collectionVariables.set('reviewId2', review2.id);\r",
+									"        pm.collectionVariables.set('reviewId3', review3.id);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const eventId = pm.collectionVariables.get('eventId');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Ответ должен содержать поля: eventId, bestReviews, worstReviews\", function () {\r",
+									"    pm.expect(target).to.have.property('eventId');\r",
+									"    pm.expect(target).to.have.property('bestReviews');\r",
+									"    pm.expect(target).to.have.property('worstReviews');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данных ответа должны соответствовать ожидаемым\", function () {\r",
+									"    pm.expect(eventId).equals(target.eventId);\r",
+									"    pm.expect(pm.collectionVariables.get('lengthBestReviews').toString()).equals(target.bestReviews.length.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('lengthWorstReviews').toString()).equals(target.worstReviews.length.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('reviewId2').toString()).equals(target.worstReviews[0].id.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('reviewId3').toString()).equals(target.worstReviews[1].id.toString());\r",
+									"    pm.expect(pm.collectionVariables.get('reviewId1').toString()).equals(target.worstReviews[2].id.toString());\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/analytics/best-and-worst/event/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"analytics",
+								"best-and-worst",
+								"event",
+								"{{eventId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Списки хороших/плохих отзывов по событию при отсутствии отзывов",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        const eventId = _.random(1001, 10000);\r",
+									"\r",
+									"        pm.collectionVariables.set('eventId', eventId);\r",
+									"        pm.collectionVariables.set('lengthBestReviews', 0);\r",
+									"        pm.collectionVariables.set('lengthWorstReviews', 0);\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            // выполняем наш скрипт\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+									"    pm.response.to.be.ok;    \r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"const eventId = pm.collectionVariables.get('eventId');\r",
+									"const target = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Ответ должен содержать поля: eventId, bestReviews, worstReviews\", function () {\r",
+									"    pm.expect(target).to.have.property('eventId');\r",
+									"    pm.expect(target).to.have.property('bestReviews');\r",
+									"    pm.expect(target).to.have.property('worstReviews');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Данных ответа должны соответствовать ожидаемым\", function () {\r",
+									"    pm.expect(eventId).equals(target.eventId);\r",
+									"    pm.expect(pm.collectionVariables.get('lengthBestReviews').toString()).equals(target.bestReviews.length.toString());\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/reviews/analytics/best-and-worst/event/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reviews",
+								"analytics",
+								"best-and-worst",
+								"event",
+								"{{eventId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Добавление нового отзыва",
 			"event": [
 				{
@@ -4135,7 +7413,7 @@
 							"    pm.expect(source.username).equal(target.username, 'Имя автора должно соответствовать отправленному в запросе');\r",
 							"    pm.expect(source.title).equal(target.title, 'Заголовок отзыва должен соответствовать отправленному в запросе');\r",
 							"    pm.expect(source.content).equal(target.content, 'Содержание отзыва должно соответствовать отправленному в запросе');\r",
-							"    pm.expect(0).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
+							"    pm.expect(source.mark).equal(target.mark, 'Оценка отзыва должна быть равна 0');\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -4609,8 +7887,8 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Количество данных в ответе должно соответствовать количеству сохранённых отзывов по искомому мероприятию\", function () {\r",
-							"    pm.expect(reviewCount).equals(target.length);\r",
-							"    pm.expect(reviewCount).equals(reviewWithEventId);\r",
+							"    pm.expect(reviewCount.toString()).equals(target.length.toString());\r",
+							"    pm.expect(reviewCount.toString()).equals(reviewWithEventId.toString());\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -4776,7 +8054,7 @@
 					"        this.pm = postman;\r",
 					"        this._verbose = verbose;\r",
 					"    }\r",
-					"\r",
+					"    \r",
 					"    async addReview(review, verbose=null) {\r",
 					"        return this.post(\"/reviews\", review, \"Ошибка при добавлении нового отзыва: \", verbose);\r",
 					"    }\r",
@@ -4848,7 +8126,7 @@
 					"            content: pm.variables.replaceIn('{{$randomLoremSentence}}').slice(1, 10000),\r",
 					"            createdOn: null,\r",
 					"            updatedOn: null,\r",
-					"            mark: 0\r",
+					"            mark: _.random(1, 10)\r",
 					"        };\r",
 					"    }\r",
 					"\r",
@@ -4915,6 +8193,70 @@
 		{
 			"key": "savedReview",
 			"value": ""
+		},
+		{
+			"key": "evaluatorId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "opinion",
+			"value": "like",
+			"type": "string"
+		},
+		{
+			"key": "eventAverageMark",
+			"value": "1.0",
+			"type": "string"
+		},
+		{
+			"key": "reviewId1",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "reviewId2",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "reviewId3",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "reviewId4",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "authorAverageMark",
+			"value": "1"
+		},
+		{
+			"key": "numberOfReviews",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "positiveReviewsPercent",
+			"value": "0.0",
+			"type": "string"
+		},
+		{
+			"key": "negativeReviewsPercent",
+			"value": "0.0",
+			"type": "string"
+		},
+		{
+			"key": "lengthBestReviews",
+			"value": "0",
+			"type": "string"
+		},
+		{
+			"key": "lengthWorstReviews",
+			"value": "0",
+			"type": "string"
 		}
 	]
 }

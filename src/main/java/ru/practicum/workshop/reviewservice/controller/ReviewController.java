@@ -10,6 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.workshop.reviewservice.dto.*;
+import ru.practicum.workshop.reviewservice.dto.analytics.AuthorAverageMark;
+import ru.practicum.workshop.reviewservice.dto.analytics.BestAndWorstReviews;
+import ru.practicum.workshop.reviewservice.dto.analytics.EventAverageMark;
+import ru.practicum.workshop.reviewservice.dto.analytics.EventIndicators;
 import ru.practicum.workshop.reviewservice.mapper.ReviewMapper;
 import ru.practicum.workshop.reviewservice.model.Review;
 import ru.practicum.workshop.reviewservice.service.ReviewService;
@@ -116,5 +120,33 @@ public class ReviewController {
                                   @Positive(message = "Review's id should be positive")
                                   Long id) {
         reviewService.removeDislike(id, evaluatorId);
+    }
+
+    @GetMapping("/analytics/average-mark/event/{eventId}")
+    public EventAverageMark getEventAverageMark(@PathVariable
+                                                    @Positive(message = "Event's id should be positive")
+                                                    Long eventId) {
+        return reviewService.getEventAverageMark(eventId);
+    }
+
+    @GetMapping("/analytics/average-mark/author/{authorId}")
+    public AuthorAverageMark getAuthorAverageMark(@PathVariable
+                                                      @Positive(message = "Author's id should be positive")
+                                                      Long authorId) {
+        return reviewService.getAuthorAverageMark(authorId);
+    }
+
+    @GetMapping("/analytics/indicators/event/{eventId}")
+    public EventIndicators getEventIndicators(@PathVariable
+                                                  @Positive(message = "Event's id should be positive")
+                                                  Long eventId) {
+        return reviewService.getEventIndicators(eventId);
+    }
+
+    @GetMapping("/analytics/best-and-worst/event/{eventId}")
+    public BestAndWorstReviews getBestAndWorstReviews(@PathVariable
+                                                          @Positive(message = "Event's id should be positive")
+                                                          Long eventId) {
+        return reviewService.getBestAndWorstReviews(eventId);
     }
 }

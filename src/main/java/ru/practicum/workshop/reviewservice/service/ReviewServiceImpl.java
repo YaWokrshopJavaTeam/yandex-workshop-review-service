@@ -7,20 +7,32 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.workshop.reviewservice.dto.Constants;
+import ru.practicum.workshop.reviewservice.dto.ReviewDto;
+import ru.practicum.workshop.reviewservice.dto.analytics.AuthorAverageMark;
+import ru.practicum.workshop.reviewservice.dto.analytics.BestAndWorstReviews;
+import ru.practicum.workshop.reviewservice.dto.analytics.EventAverageMark;
+import ru.practicum.workshop.reviewservice.dto.analytics.EventIndicators;
 import ru.practicum.workshop.reviewservice.enums.Label;
 import ru.practicum.workshop.reviewservice.exception.ConflictException;
 import ru.practicum.workshop.reviewservice.exception.ForbiddenException;
+import ru.practicum.workshop.reviewservice.mapper.ReviewMapper;
 import ru.practicum.workshop.reviewservice.storage.*;
 import ru.practicum.workshop.reviewservice.model.*;
 
 import java.util.List;
 import java.util.Optional;
 
+import static ru.practicum.workshop.reviewservice.dto.Constants.LIMIT_OF_REVIEWS_IN_ISSUE;
+import static ru.practicum.workshop.reviewservice.dto.Constants.LIMIT_OF_SUM_LIKES_DISLIKES;
+import static ru.practicum.workshop.reviewservice.dto.Constants.MARK_LIMITATION_POSITIVE_REVIEWS;
+import static ru.practicum.workshop.reviewservice.dto.Constants.MARK_LIMITATION_NEGATIVE_REVIEWS;
+
 @Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
+    private final ReviewMapper reviewMapper;
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
     private final OpinionStorage opinionStorage;
@@ -192,8 +204,10 @@ public class ReviewServiceImpl implements ReviewService {
 
     private void removeOpinion(Long reviewId, Long evaluatorId, Label label) {
         Opinion opinion = opinionStorage.findOneByReview_IdAndEvaluatorId(reviewId, evaluatorId).orElseThrow(() -> {
-            log.error("NOT FOUND. {} на ревью с id={} от пользователя с id={} не найден. Удаление отклонено.", label, reviewId, evaluatorId);
-            return new EntityNotFoundException(String.format("%s to review with id=%d from user with id=%d was not found", label, reviewId, evaluatorId));
+            log.error("NOT FOUND. {} на ревью с id={} от пользователя с id={} не найден. Удаление отклонено.", label,
+                    reviewId, evaluatorId);
+            return new EntityNotFoundException(String.format("%s to review with id=%d from user with id=%d was not found",
+                    label, reviewId, evaluatorId));
         });
         if (!opinion.getLabel().equals(label)) {
             log.error("CONFLICT. Пользователь с id {} поставил {} отзыву с id {}, а удалить предлагает {}." +
@@ -208,5 +222,60 @@ public class ReviewServiceImpl implements ReviewService {
             dislikesDecrease(review, evaluatorId);
         }
         opinionStorage.delete(opinion);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public EventAverageMark getEventAverageMark(Long eventId) {
+        Optional<Double> eventAverageMarkInOptional = reviewStorage.getEventAverageMark(eventId, LIMIT_OF_SUM_LIKES_DISLIKES);
+        Double eventAverageMark = eventAverageMarkInOptional.map(aDouble -> Math.floor(aDouble * 10) / 10).orElse(null);
+        return new EventAverageMark(eventId, eventAverageMark);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public AuthorAverageMark getAuthorAverageMark(Long authorId) {
+        Optional<Double> authorAverageMarkInOptional = reviewStorage.getAuthorAverageMark(authorId, LIMIT_OF_SUM_LIKES_DISLIKES);
+        Double authorAverageMark = authorAverageMarkInOptional.map(aDouble -> Math.floor(aDouble * 10) / 10).orElse(null);
+        return new AuthorAverageMark(authorId, authorAverageMark);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public EventIndicators getEventIndicators(Long eventId) {
+        Optional<Integer> numberOfNegativeReviewsInOptional = reviewStorage.getNumberOfNegativeReviews(eventId,
+                MARK_LIMITATION_NEGATIVE_REVIEWS);
+        Integer numberOfNegativeReviews = numberOfNegativeReviewsInOptional.orElse(null);
+        Optional<Integer> numberOfPositiveReviewsInOptional = reviewStorage.getNumberOfPositiveReviews(eventId,
+                MARK_LIMITATION_POSITIVE_REVIEWS);
+        Integer numberOfPositiveReviews = numberOfPositiveReviewsInOptional.orElse(null);
+        if (numberOfNegativeReviews == null && numberOfPositiveReviews == null) {
+            return new EventIndicators(eventId, null, null, null);
+        } else if (numberOfNegativeReviews != null && numberOfPositiveReviews == null) {
+            return new EventIndicators(eventId, numberOfNegativeReviews, 0.0, 100.0);
+        } else if (numberOfNegativeReviews == null) {
+            return new EventIndicators(eventId, numberOfPositiveReviews, 100.0, 0.0);
+        } else {
+            int numberOfReviews = numberOfNegativeReviews + numberOfPositiveReviews;
+            Double positiveReviewsPercent = Math.floor((numberOfPositiveReviews * 100.0 / numberOfReviews) * 10) / 10;
+            Double negativeReviewsPercent = Math.floor((numberOfNegativeReviews * 100.0 / numberOfReviews) * 10) / 10;
+            return new EventIndicators(eventId, numberOfReviews, positiveReviewsPercent, negativeReviewsPercent);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public BestAndWorstReviews getBestAndWorstReviews(Long eventId) {
+        List<ReviewDto> bestReviews = reviewStorage.findBestEvents(eventId, MARK_LIMITATION_POSITIVE_REVIEWS,
+                        LIMIT_OF_REVIEWS_IN_ISSUE)
+                .stream()
+                .map(reviewMapper::toDtoWithoutAuthor)
+                .toList();
+        List<ReviewDto> worstReviews = reviewStorage.findWorstEvents(eventId, MARK_LIMITATION_NEGATIVE_REVIEWS,
+                        LIMIT_OF_REVIEWS_IN_ISSUE)
+                .stream()
+                .map(reviewMapper::toDtoWithoutAuthor)
+                .toList();
+        return new BestAndWorstReviews(eventId, bestReviews, worstReviews);
     }
 }
