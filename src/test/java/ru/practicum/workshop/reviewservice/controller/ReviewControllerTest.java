@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.practicum.workshop.reviewservice.dto.ReviewDtoValidationConstants.*;
 
 @WebMvcTest(controllers = ReviewController.class)
-@RequiredArgsConstructor(onConstructor_= @Autowired)
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 @Import(ReviewMapperImpl.class)
 class ReviewControllerTest {
     private final ObjectMapper mapper;
@@ -253,10 +253,10 @@ class ReviewControllerTest {
 
         ReviewCreateDto maxUsernameDto = new ReviewCreateDto(++id, id, "user", "title",
                 "c".repeat(CONTENT_MAX_SIZE + 1), 1);
-        MockHttpServletResponse MaxResponse = createReviewResponse(maxUsernameDto);
-        String responseMaxContent = MaxResponse.getContentAsString();
+        MockHttpServletResponse maxResponse = createReviewResponse(maxUsernameDto);
+        String responseMaxContent = maxResponse.getContentAsString();
 
-        assertEquals(400, MaxResponse.getStatus());
+        assertEquals(400, maxResponse.getStatus());
         assertTrue(responseMaxContent.contains(CONTENT_SIZE_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);
@@ -291,10 +291,10 @@ class ReviewControllerTest {
 
         ReviewCreateDto maxUsernameDto = new ReviewCreateDto(++id, id, "user", "title",
                 "content", MARK_MAX_VALUE + 1);
-        MockHttpServletResponse MaxResponse = createReviewResponse(maxUsernameDto);
-        String responseMaxContent = MaxResponse.getContentAsString();
+        MockHttpServletResponse maxResponse = createReviewResponse(maxUsernameDto);
+        String responseMaxContent = maxResponse.getContentAsString();
 
-        assertEquals(400, MaxResponse.getStatus());
+        assertEquals(400, maxResponse.getStatus());
         assertTrue(responseMaxContent.contains(MARK_MAX_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);
@@ -406,10 +406,10 @@ class ReviewControllerTest {
 
         ReviewUpdateDto maxUsernameDto = new ReviewUpdateDto("n".repeat(USERNAME_MAX_SIZE + 1),
                 "other title", "content", 1);
-        MockHttpServletResponse MaxResponse = updateReviewResponse(maxUsernameDto, reviewId, authorId);;
-        String responseMaxContent = MaxResponse.getContentAsString();
+        MockHttpServletResponse maxResponse = updateReviewResponse(maxUsernameDto, reviewId, authorId);;
+        String responseMaxContent = maxResponse.getContentAsString();
 
-        assertEquals(400, MaxResponse.getStatus());
+        assertEquals(400, maxResponse.getStatus());
         assertTrue(responseMaxContent.contains(USERNAME_SIZE_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);
@@ -448,10 +448,10 @@ class ReviewControllerTest {
 
         ReviewUpdateDto maxContentDto = new ReviewUpdateDto("other name", "other title",
                 "c".repeat(CONTENT_MAX_SIZE + 1), 1);
-        MockHttpServletResponse MaxResponse = updateReviewResponse(maxContentDto, reviewId, authorId);;
-        String responseMaxContent = MaxResponse.getContentAsString();
+        MockHttpServletResponse maxResponse = updateReviewResponse(maxContentDto, reviewId, authorId);;
+        String responseMaxContent = maxResponse.getContentAsString();
 
-        assertEquals(400, MaxResponse.getStatus());
+        assertEquals(400, maxResponse.getStatus());
         assertTrue(responseMaxContent.contains(CONTENT_SIZE_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);
@@ -473,10 +473,10 @@ class ReviewControllerTest {
 
         ReviewUpdateDto maxMarkDto = new ReviewUpdateDto("user", "title",
                 "content", MARK_MAX_VALUE + 1);
-        MockHttpServletResponse MaxResponse = updateReviewResponse(maxMarkDto, reviewId, authorId);
-        String responseMaxContent = MaxResponse.getContentAsString();
+        MockHttpServletResponse maxResponse = updateReviewResponse(maxMarkDto, reviewId, authorId);
+        String responseMaxContent = maxResponse.getContentAsString();
 
-        assertEquals(400, MaxResponse.getStatus());
+        assertEquals(400, maxResponse.getStatus());
         assertTrue(responseMaxContent.contains(MARK_MAX_ERROR_MESSAGE));
 
         verifyNoInteractions(reviewService);

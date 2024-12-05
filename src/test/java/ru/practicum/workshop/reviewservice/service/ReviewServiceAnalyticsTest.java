@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ActiveProfiles(value = "test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@RequiredArgsConstructor(onConstructor_= @Autowired)
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ReviewServiceAnalyticsTest {
     private final ReviewService reviewService;
     private final ReviewStorage reviewStorage;
@@ -57,8 +57,8 @@ public class ReviewServiceAnalyticsTest {
     @BeforeEach
     void beforeEach() {
         author1 = userStorage.save(new User(userId, "user" + userId++));
-        author2 = userStorage.save(new User(userId, "user" + (userId++)*2));
-        author3 = userStorage.save(new User(userId, "user" + (userId++)*3));
+        author2 = userStorage.save(new User(userId, "user" + (userId++) * 2));
+        author3 = userStorage.save(new User(userId, "user" + (userId++) * 3));
         review1 = reviewService.createReview(Review.builder()
                 .author(author1)
                 .eventId(1L)
