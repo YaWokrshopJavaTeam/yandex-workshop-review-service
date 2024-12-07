@@ -1,4 +1,4 @@
-name: Java CI for Task Service
+name: Java CI for Review Service
 
 on:
   pull_request:
