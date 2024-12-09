@@ -6454,8 +6454,7 @@
 									"        const eventId = _.random(1001, 10000);\r",
 									"\r",
 									"        pm.collectionVariables.set('eventId', eventId);\r",
-									"        \r",
-									"        pm.collectionVariables.set('eventId', eventId);\r",
+									"\r",
 									"    } catch(err) {\r",
 									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
 									"    }\r",
@@ -8159,7 +8158,7 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://localhost:8090",
+			"value": "http://localhost:8085",
 			"type": "string"
 		},
 		{
