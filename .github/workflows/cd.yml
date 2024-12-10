@@ -1,0 +1,55 @@
+name: Deploy Review Service on Server.
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker image
+        run: docker build -t ya-workshop-review-service .
+
+      - name: Save Docker Image to File
+        run: |
+          docker save ya-workshop-review-service -o ya-workshop-review-service.tar
+          chmod 644 ya-workshop-review-service.tar
+
+      - name: Transfer Docker image and compose to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          source: "ya-workshop-review-service.tar, docker-compose.yml"
+          target: ~/deploy/review-service/
+
+      - name: Deploy on Server
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: |
+            cd ~/deploy/review-service/
+            docker load -i ya-workshop-review-service.tar
+            docker compose down
+            docker compose up -d
