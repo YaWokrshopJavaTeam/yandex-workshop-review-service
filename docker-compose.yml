@@ -2,6 +2,7 @@ version: '3.8'
 services:
   review-service:
     build: .
+    image: ya-workshop-review-service
     container_name: review-service
     ports:
       - "8085:8090"
