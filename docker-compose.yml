@@ -17,7 +17,7 @@ services:
     image: postgres:14-alpine
     container_name: review-service-db
     ports:
-      - "6542:5432"
+      - "6547:5432"
     environment:
       - POSTGRES_DB=review-service
       - POSTGRES_USER=root
