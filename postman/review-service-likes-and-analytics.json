@@ -4243,6 +4243,7 @@
 											"const main = async () => {\r",
 											"    const api = new API(pm);\r",
 											"    const rnd = new RandomUtils();\r",
+											"    const baseUrl = pm.collectionVariables.get('baseUrl');\r",
 											"\r",
 											"    try {\r",
 											"        const review = await api.addReview(rnd.getReview());\r",
@@ -4254,7 +4255,7 @@
 											"        let body\r",
 											"        const evaluator = pm.collectionVariables.get('evaluatorId') + '';\r",
 											"        const req = {\r",
-											"                url: \"http://84.201.170.106:8085/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/like\",\r",
+											"                url: baseUrl + \"/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/like\",\r",
 											"                method: \"PUT\",\r",
 											"                header: { \"Accept\": \"application/json\",\r",
 											"                \"Content-Type\": \"application/json\", \r",
@@ -4346,6 +4347,7 @@
 											"const main = async () => {\r",
 											"    const api = new API(pm);\r",
 											"    const rnd = new RandomUtils();\r",
+											"    const baseUrl = pm.collectionVariables.get('baseUrl');\r",
 											"\r",
 											"    try {\r",
 											"        const review = await api.addReview(rnd.getReview());\r",
@@ -4357,7 +4359,7 @@
 											"        let body\r",
 											"        const evaluator = pm.collectionVariables.get('evaluatorId') + '';\r",
 											"        const req = {\r",
-											"                url: \"http://84.201.170.106:8085/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/dislike\",\r",
+											"                url: baseUrl + \"/reviews/\" + pm.collectionVariables.get(\"reviewId\") + \"/dislike\",\r",
 											"                method: \"PUT\",\r",
 											"                header: { \"Accept\": \"application/json\",\r",
 											"                \"Content-Type\": \"application/json\", \r",
@@ -8067,7 +8069,7 @@
 				"packages": {},
 				"exec": [
 					"API = class {\r",
-					"    constructor(postman, verbose = false, baseUrl = \"http://84.201.170.106:8085\") {\r",
+					"    constructor(postman, verbose = false, baseUrl = pm.collectionVariables.get('baseUrl')) {\r",
 					"        this.baseUrl = baseUrl;\r",
 					"        this.pm = postman;\r",
 					"        this._verbose = verbose;\r",
@@ -8177,7 +8179,7 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://84.201.170.106:8085",
+			"value": "http://158.160.82.103:8085",
 			"type": "string"
 		},
 		{
