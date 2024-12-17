@@ -1,13 +1,14 @@
 package ru.practicum.workshop.reviewservice.service;
 
 import lombok.RequiredArgsConstructor;
+import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springdoc.webmvc.core.service.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,14 +29,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @Transactional
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest
 @ActiveProfiles(value = "test")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ReviewServiceAnalyticsTest {
     private final ReviewService reviewService;
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
+    static MockWebServer server;
 
     private static Review review1;
     private static Review review2;
@@ -53,13 +54,15 @@ public class ReviewServiceAnalyticsTest {
     private static User author3;
     private static Long userId = 0L;
 
+    @Autowired
+    private RequestService requestBuilder;
 
     @BeforeEach
     void beforeEach() {
         author1 = userStorage.save(new User(userId, "user" + userId++));
         author2 = userStorage.save(new User(userId, "user" + (userId++) * 2));
         author3 = userStorage.save(new User(userId, "user" + (userId++) * 3));
-        review1 = reviewService.createReview(Review.builder()
+        review1 = reviewStorage.save(Review.builder()
                 .author(author1)
                 .eventId(1L)
                 .title("title")
@@ -67,7 +70,7 @@ public class ReviewServiceAnalyticsTest {
                 .createdOn(LocalDateTime.now())
                 .mark(1)
                 .build());
-        review2 = reviewService.createReview(Review.builder()
+        review2 = reviewStorage.save(Review.builder()
                 .author(author2)
                 .eventId(1L)
                 .title("title")
@@ -75,7 +78,7 @@ public class ReviewServiceAnalyticsTest {
                 .createdOn(LocalDateTime.now())
                 .mark(2)
                 .build());
-        review3 = reviewService.createReview(Review.builder()
+        review3 = reviewStorage.save(Review.builder()
                 .author(author1)
                 .eventId(2L)
                 .title("title")
@@ -83,7 +86,7 @@ public class ReviewServiceAnalyticsTest {
                 .createdOn(LocalDateTime.now())
                 .mark(3)
                 .build());
-        review4 = reviewService.createReview(Review.builder()
+        review4 = reviewStorage.save(Review.builder()
                 .author(author2)
                 .eventId(2L)
                 .title("title")
@@ -91,7 +94,7 @@ public class ReviewServiceAnalyticsTest {
                 .createdOn(LocalDateTime.now())
                 .mark(4)
                 .build());
-        review5 = reviewService.createReview(Review.builder()
+        review5 = reviewStorage.save(Review.builder()
                 .author(author2)
                 .eventId(2L)
                 .title("title")
@@ -99,7 +102,7 @@ public class ReviewServiceAnalyticsTest {
                 .createdOn(LocalDateTime.now())
                 .mark(7)
                 .build());
-        review6 = reviewService.createReview(Review.builder()
+        review6 = reviewStorage.save(Review.builder()
                 .author(author2)
                 .eventId(1L)
                 .title("title")
@@ -107,7 +110,7 @@ public class ReviewServiceAnalyticsTest {
                 .createdOn(LocalDateTime.now())
                 .mark(8)
                 .build());
-        review7 = reviewService.createReview(Review.builder()
+        review7 = reviewStorage.save(Review.builder()
                 .author(author1)
                 .eventId(2L)
                 .title("title")
@@ -115,7 +118,7 @@ public class ReviewServiceAnalyticsTest {
                 .createdOn(LocalDateTime.now())
                 .mark(9)
                 .build());
-        review8 = reviewService.createReview(Review.builder()
+        review8 = reviewStorage.save(Review.builder()
                 .author(author1)
                 .eventId(2L)
                 .title("title")
@@ -123,7 +126,7 @@ public class ReviewServiceAnalyticsTest {
                 .createdOn(LocalDateTime.now())
                 .mark(10)
                 .build());
-        review9 = reviewService.createReview(Review.builder()
+        review9 = reviewStorage.save(Review.builder()
                 .author(author3)
                 .eventId(9L)
                 .title("title")
@@ -131,7 +134,7 @@ public class ReviewServiceAnalyticsTest {
                 .createdOn(LocalDateTime.now())
                 .mark(10)
                 .build());
-        review10 = reviewService.createReview(Review.builder()
+        review10 = reviewStorage.save(Review.builder()
                 .author(author3)
                 .eventId(10L)
                 .title("title")
@@ -356,7 +359,7 @@ public class ReviewServiceAnalyticsTest {
     @Test
     public void getBestAndWorstReviewsForEventId2With2AdditionalBadReviews() {
         Long eventId = 2L;
-        Review review11 = reviewService.createReview(Review.builder()
+        Review review11 = reviewStorage.save(Review.builder()
                 .author(author3)
                 .eventId(eventId)
                 .title("title")
@@ -364,7 +367,7 @@ public class ReviewServiceAnalyticsTest {
                 .createdOn(LocalDateTime.now())
                 .mark(1)
                 .build());
-        Review review12 = reviewService.createReview(Review.builder()
+        Review review12 = reviewStorage.save(Review.builder()
                 .author(author3)
                 .eventId(eventId)
                 .title("title")

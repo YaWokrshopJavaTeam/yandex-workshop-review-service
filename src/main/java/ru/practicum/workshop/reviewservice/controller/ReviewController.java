@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -16,12 +17,12 @@ import ru.practicum.workshop.reviewservice.dto.analytics.EventAverageMark;
 import ru.practicum.workshop.reviewservice.dto.analytics.EventIndicators;
 import ru.practicum.workshop.reviewservice.mapper.ReviewMapper;
 import ru.practicum.workshop.reviewservice.model.Review;
-import ru.practicum.workshop.reviewservice.service.EventClient;
 import ru.practicum.workshop.reviewservice.service.ReviewService;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -29,13 +30,10 @@ import java.util.stream.Collectors;
 public class ReviewController {
     private final ReviewService reviewService;
     private final ReviewMapper reviewMapper;
-    private final EventClient eventClient;
 
     @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping
     public ReviewDtoWithAuthor createReview(@Valid @RequestBody ReviewCreateDto dto) {
-        EventResponse eventResponse = eventClient.readEventById(dto.getEventId());
-        System.out.println(eventResponse.toString());
         Review createdReview = reviewService.createReview(reviewMapper.toEntity(dto));
         return reviewMapper.toDtoWithAuthor(createdReview);
     }

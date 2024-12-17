@@ -2,6 +2,10 @@ package ru.practicum.workshop.reviewservice.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +20,7 @@ import ru.practicum.workshop.reviewservice.exception.*;
 import ru.practicum.workshop.reviewservice.model.*;
 import ru.practicum.workshop.reviewservice.storage.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,16 +34,31 @@ public class ReviewServiceImplTest {
     private final ReviewService reviewService;
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
-
+    static MockWebServer server;
     private static Review review;
     private static User author;
     private static Long userId = 0L;
     private static final Long evaluatorId = 1L;
 
+    @BeforeAll
+    static void setUp() throws IOException {
+        server = new MockWebServer();
+        MockResponse response = new MockResponse()
+                .addHeader("Content-Type", "application/json; charset=utf-8")
+                .setBody("{\"endDateTime\": \"2024-12-07T11:27:11.514690\"}");
+        server.enqueue(response);
+        server.start(8082);
+    }
+
+    @AfterAll
+    static void tearDown() throws IOException {
+        server.shutdown();
+    }
+
     @BeforeEach
     void beforeEach() {
         author = userStorage.save(new User(userId, "user" + userId++));
-        review = reviewService.createReview(Review.builder()
+        review = reviewStorage.save(Review.builder()
                 .author(author)
                 .eventId(0L)
                 .title("title")
@@ -51,7 +71,7 @@ public class ReviewServiceImplTest {
     @DisplayName("Создать отзыв")
     @Test
     void createReview() {
-        review = reviewStorage.save(Review.builder()
+        review = reviewService.createReview(Review.builder()
                 .author(author)
                 .eventId(0L)
                 .title("title")
@@ -208,7 +228,7 @@ public class ReviewServiceImplTest {
     }
 
     private Review createNewReview(Long eventId) {
-        return reviewService.createReview(Review.builder()
+        return reviewStorage.save(Review.builder()
                 .author(author)
                 .eventId(eventId)
                 .title("title")
