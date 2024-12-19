@@ -1,7 +1,6 @@
 package ru.practicum.workshop.reviewservice.service;
 
 import lombok.RequiredArgsConstructor;
-import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +35,6 @@ public class ReviewServiceAnalyticsTest {
     private final ReviewService reviewService;
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
-    static MockWebServer server;
 
     private static Review review1;
     private static Review review2;

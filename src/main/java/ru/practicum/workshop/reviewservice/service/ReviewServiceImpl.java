@@ -61,8 +61,7 @@ public class ReviewServiceImpl implements ReviewService {
         return newReview;
     }
 
-    @Override
-    public void checkEvent(Review review) {
+    private void checkEvent(Review review) {
         EventResponse eventResponse;
         try {
             eventResponse = eventClient.readEventById(review.getAuthor().getId(), review.getEventId());

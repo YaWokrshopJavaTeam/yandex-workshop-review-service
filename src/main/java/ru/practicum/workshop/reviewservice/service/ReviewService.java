@@ -36,5 +36,4 @@ public interface ReviewService {
 
     BestAndWorstReviews getBestAndWorstReviews(Long eventId);
 
-    void checkEvent(Review review);
 }
