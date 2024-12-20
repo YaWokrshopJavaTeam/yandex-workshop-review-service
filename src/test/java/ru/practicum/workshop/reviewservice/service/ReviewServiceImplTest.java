@@ -2,58 +2,51 @@ package ru.practicum.workshop.reviewservice.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.workshop.reviewservice.dto.EventResponse;
+import ru.practicum.workshop.reviewservice.dto.StatusOfRegistration;
 import ru.practicum.workshop.reviewservice.enums.Label;
 import ru.practicum.workshop.reviewservice.exception.*;
 import ru.practicum.workshop.reviewservice.model.*;
 import ru.practicum.workshop.reviewservice.storage.*;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
 @ActiveProfiles(value = "test")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@ExtendWith(MockitoExtension.class)
 public class ReviewServiceImplTest {
     private final ReviewService reviewService;
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
-    static MockWebServer server;
     private static Review review;
     private static User author;
     private static Long userId = 0L;
     private static final Long evaluatorId = 1L;
 
-    @BeforeAll
-    static void setUp() throws IOException {
-        server = new MockWebServer();
-        MockResponse response = new MockResponse()
-                .addHeader("Content-Type", "application/json; charset=utf-8")
-                .setBody("{\"endDateTime\": \"2024-12-07T11:27:11.514690\"}");
-        server.enqueue(response);
-        server.start(8082);
-    }
+    @MockBean
+    private EventClient eventClient;
 
-    @AfterAll
-    static void tearDown() throws IOException {
-        server.shutdown();
-    }
+    @MockBean
+    private RegistrationClient registrationClient;
 
     @BeforeEach
     void beforeEach() {
@@ -71,6 +64,17 @@ public class ReviewServiceImplTest {
     @DisplayName("Создать отзыв")
     @Test
     void createReview() {
+
+        EventResponse eventResponse = new EventResponse(10L, "paisvhpdnvs", "fidbdfbdbhfidbdifbnidf",
+                LocalDateTime.now().minusDays(10), LocalDateTime.now().minusDays(5), "fjnsdvdjfnvibdfjs",
+                10L, LocalDateTime.now());
+
+        when(eventClient.readEventById(any(Long.class), any(Long.class))).thenReturn(eventResponse);
+
+        StatusOfRegistration status = new StatusOfRegistration("APPROVED");
+
+        when(registrationClient.getStatusOfRegistration(any(Long.class), any(Long.class))).thenReturn(status);
+
         review = reviewService.createReview(Review.builder()
                 .author(author)
                 .eventId(0L)

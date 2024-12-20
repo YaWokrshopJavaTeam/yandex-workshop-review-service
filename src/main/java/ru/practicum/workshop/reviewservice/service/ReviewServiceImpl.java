@@ -40,6 +40,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserStorage userStorage;
     private final OpinionStorage opinionStorage;
     private final EventClient eventClient;
+    private final RegistrationClient registrationClient;
 
     public void saveUser(User user) {
         User newUser = userStorage.save(user);
@@ -52,6 +53,8 @@ public class ReviewServiceImpl implements ReviewService {
     public Review createReview(Review review) {
 
         checkEvent(review);
+
+        checkRegistration(review);
 
         saveUser(review.getAuthor());
 
@@ -73,6 +76,21 @@ public class ReviewServiceImpl implements ReviewService {
         if (eventResponse.getEndDateTime().isAfter(LocalDateTime.now())) {
             log.error("FORBIDDEN. Публикация отзыва. Событие с id {} не завершено.", eventResponse.getId());
             throw new ForbiddenException(String.format("The event with id = %d is not completed", eventResponse.getId()));
+        }
+    }
+
+    private void checkRegistration(Review review) {
+        String registrationStatus;
+        try {
+            registrationStatus = registrationClient.getStatusOfRegistration(review.getEventId(), review.getAuthor().getId()).getRegistrationStatus();
+        } catch (FeignException.NotFound e) {
+            log.error("FORBIDDEN. Отзыв к событию с id {} отклонен. Регистрация на событие не найдена.", review.getEventId());
+            throw new ForbiddenException(String.format("Adding of review for event with id = %d is rejected. " +
+                    "Registration to event is not found", review.getEventId()));
+        }
+        if (!registrationStatus.equals("APPROVED")) {
+            log.error("FORBIDDEN. Публикация отзыва. Регистрация на событие с id {} не подтверждена.", review.getEventId());
+            throw new ForbiddenException(String.format("Registration to event with id = %d is not APPROVED", review.getEventId()));
         }
     }
 
