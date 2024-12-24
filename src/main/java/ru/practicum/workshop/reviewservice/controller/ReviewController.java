@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,6 @@ import ru.practicum.workshop.reviewservice.service.ReviewService;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Validated
 @RestController
 @RequiredArgsConstructor

@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.workshop.reviewservice.client.EventClient;
+import ru.practicum.workshop.reviewservice.client.RegistrationClient;
 import ru.practicum.workshop.reviewservice.dto.Constants;
 import ru.practicum.workshop.reviewservice.dto.EventResponse;
 import ru.practicum.workshop.reviewservice.dto.ReviewDto;
@@ -42,7 +44,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final EventClient eventClient;
     private final RegistrationClient registrationClient;
 
-    public void saveUser(User user) {
+    private void saveUser(User user) {
         User newUser = userStorage.save(user);
 
         log.info("User added: {}", newUser);
@@ -69,20 +71,20 @@ public class ReviewServiceImpl implements ReviewService {
         try {
             eventResponse = eventClient.readEventById(review.getAuthor().getId(), review.getEventId());
         } catch (FeignException.NotFound e) {
-            log.error("FORBIDDEN. Отзыв к событию с id {} отклонен. Событие не найдено.", review.getEventId());
-            throw new ForbiddenException(String.format("Adding of review for event with id = %d is rejected. " +
+            log.error("CONFLICT. Отзыв к событию с id {} отклонен. Событие не найдено.", review.getEventId());
+            throw new ConflictException(String.format("Adding of review for event with id = %d is rejected. " +
                     "Event is not found", review.getEventId()));
         }
         if (eventResponse.getEndDateTime().isAfter(LocalDateTime.now())) {
-            log.error("FORBIDDEN. Публикация отзыва. Событие с id {} не завершено.", eventResponse.getId());
-            throw new ForbiddenException(String.format("The event with id = %d is not completed", eventResponse.getId()));
+            log.error("CONFLICT. Публикация отзыва. Событие с id {} не завершено.", eventResponse.getId());
+            throw new ConflictException(String.format("The event with id = %d is not completed", eventResponse.getId()));
         }
     }
 
     private void checkRegistration(Review review) {
         String registrationStatus;
         try {
-            registrationStatus = registrationClient.getStatusOfRegistration(review.getEventId(), review.getAuthor().getId()).getRegistrationStatus();
+            registrationStatus = registrationClient.getStatusOfRegistration(review.getEventId(), review.getAuthor().getId());
         } catch (FeignException.NotFound e) {
             log.error("FORBIDDEN. Отзыв к событию с id {} отклонен. Регистрация на событие не найдена.", review.getEventId());
             throw new ForbiddenException(String.format("Adding of review for event with id = %d is rejected. " +

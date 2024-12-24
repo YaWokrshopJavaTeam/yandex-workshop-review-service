@@ -14,8 +14,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.workshop.reviewservice.client.EventClient;
+import ru.practicum.workshop.reviewservice.client.RegistrationClient;
 import ru.practicum.workshop.reviewservice.dto.EventResponse;
-import ru.practicum.workshop.reviewservice.dto.StatusOfRegistration;
 import ru.practicum.workshop.reviewservice.enums.Label;
 import ru.practicum.workshop.reviewservice.exception.*;
 import ru.practicum.workshop.reviewservice.model.*;
@@ -71,7 +72,7 @@ public class ReviewServiceImplTest {
 
         when(eventClient.readEventById(any(Long.class), any(Long.class))).thenReturn(eventResponse);
 
-        StatusOfRegistration status = new StatusOfRegistration("APPROVED");
+        String status = "APPROVED";
 
         when(registrationClient.getStatusOfRegistration(any(Long.class), any(Long.class))).thenReturn(status);
 
