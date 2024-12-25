@@ -35,4 +35,5 @@ public interface ReviewService {
     EventIndicators getEventIndicators(Long eventId);
 
     BestAndWorstReviews getBestAndWorstReviews(Long eventId);
+
 }
